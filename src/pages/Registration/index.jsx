@@ -18,7 +18,8 @@ const Registration = () => {
     formState: { errors, isValid },
   } = useForm({
     defaultValues: {
-      fullName: '',
+      firstName: '',
+      lastName: '',
       email: '',
       password: '',
     },
@@ -50,11 +51,20 @@ const Registration = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <TextField
           className={styles.field}
-          label="Повне ім'я"
-          type="fullName"
+          label="Ім'я"
+          type="firstName"
           error={Boolean(errors.fullName?.message)}
           helperText={errors.fullName?.message}
-          {...register('fullName', { required: "Уведіть ваше повне ім'я" })}
+          {...register('firstName', { required: "Уведіть ваше ім'я" })}
+          fullWidth
+        />
+        <TextField
+          className={styles.field}
+          label="Прізвище"
+          type="lastName"
+          error={Boolean(errors.fullName?.message)}
+          helperText={errors.fullName?.message}
+          {...register('lastName', { required: 'Уведіть ваше повне прізвище' })}
           fullWidth
         />
         <TextField

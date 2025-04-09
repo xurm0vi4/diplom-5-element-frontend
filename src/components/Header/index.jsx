@@ -41,6 +41,12 @@ const Header = () => {
             </div>
           ) : (
             <div className={styles.buttons}>
+              <Link to="/trainings">
+                <Button variant="outlined">Заняття</Button>
+              </Link>
+              <Link to="/coaches">
+                <Button variant="outlined">Тренери</Button>
+              </Link>
               <Link to="/login">
                 <Button variant="outlined">Увійти</Button>
               </Link>
