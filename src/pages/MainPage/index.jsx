@@ -1,10 +1,412 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { 
+  Box, 
+  Typography, 
+  Grid, 
+  Button, 
+  Card, 
+  CardContent, 
+  CardMedia,
+  CardActions,
+  Container,
+  Paper,
+  Divider,
+  CircularProgress,
+  Chip
+} from '@mui/material';
+import { 
+  FitnessCenter, 
+  People, 
+  Sports, 
+  ArrowForward,
+  LocationOn,
+  AccessTime,
+  Group
+} from '@mui/icons-material';
+import { fetchAllTrainings } from '../../redux/slices/trainings';
+import styles from './MainPage.module.scss';
 
 const MainPage = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { trainings, loading } = useSelector((state) => state.trainings || {});
+  const { isAuthenticated } = useSelector((state) => state.auth || {});
+  
+  useEffect(() => {
+    dispatch(fetchAllTrainings());
+  }, [dispatch]);
+  
+  // Отримуємо популярні тренування (перші 3)
+  const popularTrainings = trainings ? trainings.slice(0, 3) : [];
+  
+  // Категорії тренувань
+  const categories = [
+    { id: 'fitness', name: 'Фітнес', icon: <FitnessCenter /> },
+    { id: 'yoga', name: 'Йога', icon: <Sports /> },
+    { id: 'dance', name: 'Танці', icon: <People /> },
+    { id: 'martial_arts', name: 'Бойові мистецтва', icon: <Sports /> },
+    { id: 'swimming', name: 'Плавання', icon: <Sports /> },
+    { id: 'team_sports', name: 'Командні види спорту', icon: <People /> }
+  ];
+  
+  const handleCategoryClick = (categoryId) => {
+    navigate(`/trainings?category=${categoryId}`);
+  };
+  
+  const handleTrainingClick = (trainingId) => {
+    navigate(`/trainings/${trainingId}`);
+  };
+  
+  const handleViewAllTrainings = () => {
+    navigate('/trainings');
+  };
+  
+  const handleViewAllCoaches = () => {
+    navigate('/coaches');
+  };
+  
   return (
-    <div>
-      <header>bla</header>
-      Main page
+    <div className={styles.mainPage}>
+      {/* Hero секція */}
+      <Box className={styles.heroSection}>
+        <Container maxWidth="lg">
+          <Grid container spacing={4} alignItems="center">
+            <Grid item xs={12} md={6}>
+              <Typography variant="h2" component="h1" className={styles.heroTitle}>
+                Дій до своїх цілей з нашим спортивним клубом
+              </Typography>
+              <Typography variant="h5" className={styles.heroSubtitle}>
+                Професійні тренування, досвідчені тренери та сучасне обладнання для досягнення ваших фітнес-цілей
+              </Typography>
+              <Box className={styles.heroButtons}>
+                <Button 
+                  variant="contained" 
+                  color="primary" 
+                  size="large"
+                  endIcon={<ArrowForward />}
+                  onClick={handleViewAllTrainings}
+                >
+                  Переглянути тренування
+                </Button>
+                {!isAuthenticated && (
+                  <Button 
+                    variant="outlined" 
+                    color="primary" 
+                    size="large"
+                    onClick={() => navigate('/registration')}
+                  >
+                    Зареєструватися
+                  </Button>
+                )}
+              </Box>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Box className={styles.heroImageContainer}>
+                <img 
+                  src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" 
+                  alt="Спортивний клуб" 
+                  className={styles.heroImage}
+                />
+              </Box>
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
+      
+      {/* Категорії тренувань */}
+      <Container maxWidth="lg" className={styles.section}>
+        <Typography variant="h3" component="h2" className={styles.sectionTitle}>
+          Категорії тренувань
+        </Typography>
+        <Typography variant="h6" className={styles.sectionSubtitle}>
+          Виберіть тренування, яке найкраще підходить для вас
+        </Typography>
+        
+        <Grid container spacing={3} className={styles.categoriesGrid}>
+          {categories.map((category) => (
+            <Grid item xs={12} sm={6} md={4} key={category.id}>
+              <Card 
+                className={styles.categoryCard}
+                onClick={() => handleCategoryClick(category.id)}
+              >
+                <CardContent className={styles.categoryContent}>
+                  <Box className={styles.categoryIcon}>
+                    {category.icon}
+                  </Box>
+                  <Typography variant="h5" component="h3" className={styles.categoryTitle}>
+                    {category.name}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </Container>
+      
+      {/* Популярні тренування */}
+      <Box className={styles.trainingsSection}>
+        <Container maxWidth="lg">
+          <Typography variant="h3" component="h2" className={styles.sectionTitle}>
+            Популярні тренування
+          </Typography>
+          <Typography variant="h6" className={styles.sectionSubtitle}>
+            Найбільш затребувані тренування нашого клубу
+          </Typography>
+          
+          {loading ? (
+            <Box className={styles.loadingContainer}>
+              <CircularProgress />
+              <Typography variant="h6" className={styles.loadingText}>
+                Завантаження тренувань...
+              </Typography>
+            </Box>
+          ) : (
+            <>
+              <Grid container spacing={3} className={styles.trainingsGrid}>
+                {popularTrainings.map((training) => (
+                  <Grid item xs={12} sm={6} md={4} key={training._id}>
+                    <Card 
+                      className={styles.trainingCard}
+                      onClick={() => handleTrainingClick(training._id)}
+                    >
+                      <CardMedia
+                        component="img"
+                        height="200"
+                        image={training.image || 'https://via.placeholder.com/400x200?text=Тренування'}
+                        alt={training.title}
+                        className={styles.trainingImage}
+                      />
+                      <CardContent className={styles.trainingContent}>
+                        <Typography variant="h6" component="h3" className={styles.trainingTitle}>
+                          {training.title}
+                        </Typography>
+                        
+                        <Box className={styles.trainingInfo}>
+                          <Box className={styles.infoItem}>
+                            <LocationOn fontSize="small" />
+                            <Typography variant="body2">
+                              {training.location}
+                            </Typography>
+                          </Box>
+                          
+                          <Box className={styles.infoItem}>
+                            <AccessTime fontSize="small" />
+                            <Typography variant="body2">
+                              {training.duration} хв
+                            </Typography>
+                          </Box>
+                          
+                          <Box className={styles.infoItem}>
+                            <Group fontSize="small" />
+                            <Typography variant="body2">
+                              {training.maxParticipants} учасників
+                            </Typography>
+                          </Box>
+                        </Box>
+                        
+                        <Box className={styles.categoryContainer}>
+                          <Chip 
+                            label={training.category} 
+                            color="primary" 
+                            size="small"
+                            className={styles.categoryChip}
+                          />
+                        </Box>
+                      </CardContent>
+                      <CardActions className={styles.trainingActions}>
+                        <Typography variant="h6" color="primary" className={styles.trainingPrice}>
+                          {training.price} ₴
+                        </Typography>
+                        <Button 
+                          variant="contained" 
+                          color="primary"
+                          size="small"
+                          className={styles.detailsButton}
+                        >
+                          Деталі
+                        </Button>
+                      </CardActions>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+              
+              <Box className={styles.viewAllContainer}>
+                <Button 
+                  variant="outlined" 
+                  color="primary" 
+                  endIcon={<ArrowForward />}
+                  onClick={handleViewAllTrainings}
+                >
+                  Переглянути всі тренування
+                </Button>
+              </Box>
+            </>
+          )}
+        </Container>
+      </Box>
+      
+      {/* Секція про клуб */}
+      <Container maxWidth="lg" className={styles.section}>
+        <Typography variant="h3" component="h2" className={styles.sectionTitle}>
+          Про наш клуб
+        </Typography>
+        <Typography variant="h6" className={styles.sectionSubtitle}>
+          Дізнайтеся більше про наш спортивний клуб
+        </Typography>
+        
+        <Grid container spacing={4} className={styles.aboutGrid}>
+          <Grid item xs={12} md={6}>
+            <Box className={styles.aboutImageContainer}>
+              <img 
+                src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" 
+                alt="Про наш клуб" 
+                className={styles.aboutImage}
+              />
+            </Box>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Box className={styles.aboutContent}>
+              <Typography variant="h4" component="h3" className={styles.aboutTitle}>
+                Наш спортивний клуб - це місце, де ви можете досягти своїх фітнес-цілей
+              </Typography>
+              <Divider className={styles.aboutDivider} />
+              <Typography variant="body1" className={styles.aboutText}>
+                Ми пропонуємо широкий вибір тренувань для всіх рівнів підготовки - від початківців до професіоналів. Наші досвідчені тренери допоможуть вам досягти бажаних результатів.
+              </Typography>
+              <Typography variant="body1" className={styles.aboutText}>
+                Наш клуб оснащений сучасним обладнанням та має зручні зали для тренувань. Ми також пропонуємо індивідуальні тренування та консультації з харчування.
+              </Typography>
+              <Box className={styles.aboutButtons}>
+                <Button 
+                  variant="contained" 
+                  color="primary" 
+                  endIcon={<ArrowForward />}
+                  onClick={handleViewAllCoaches}
+                >
+                  Наші тренери
+                </Button>
+              </Box>
+            </Box>
+          </Grid>
+        </Grid>
+      </Container>
+      
+      {/* Секція з відгуками */}
+      <Box className={styles.testimonialsSection}>
+        <Container maxWidth="lg">
+          <Typography variant="h3" component="h2" className={styles.sectionTitle}>
+            Відгуки наших клієнтів
+          </Typography>
+          <Typography variant="h6" className={styles.sectionSubtitle}>
+            Що кажуть про нас наші клієнти
+          </Typography>
+          
+          <Grid container spacing={3} className={styles.testimonialsGrid}>
+            <Grid item xs={12} md={4}>
+              <Paper className={styles.testimonialCard}>
+                <Typography variant="body1" className={styles.testimonialText}>
+                  "Чудовий клуб з професійними тренерами. Завдяки їм я досяг своїх фітнес-цілей за короткий час. Рекомендую!"
+                </Typography>
+                <Box className={styles.testimonialAuthor}>
+                  <Typography variant="subtitle1" className={styles.authorName}>
+                    Олена Петренко
+                  </Typography>
+                  <Typography variant="body2" className={styles.authorTitle}>
+                    Клієнт клубу
+                  </Typography>
+                </Box>
+              </Paper>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Paper className={styles.testimonialCard}>
+                <Typography variant="body1" className={styles.testimonialText}>
+                  "Найкращий спортивний клуб у місті! Зручне розташування, сучасне обладнання та привітний персонал. Відвідую регулярно."
+                </Typography>
+                <Box className={styles.testimonialAuthor}>
+                  <Typography variant="subtitle1" className={styles.authorName}>
+                    Андрій Коваленко
+                  </Typography>
+                  <Typography variant="body2" className={styles.authorTitle}>
+                    Клієнт клубу
+                  </Typography>
+                </Box>
+              </Paper>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Paper className={styles.testimonialCard}>
+                <Typography variant="body1" className={styles.testimonialText}>
+                  "Завдяки тренуванням у цьому клубі я покращив свою фізичну форму та здоров'я. Тренери дуже уважні та професійні."
+                </Typography>
+                <Box className={styles.testimonialAuthor}>
+                  <Typography variant="subtitle1" className={styles.authorName}>
+                    Марія Іваненко
+                  </Typography>
+                  <Typography variant="body2" className={styles.authorTitle}>
+                    Клієнт клубу
+                  </Typography>
+                </Box>
+              </Paper>
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
+      
+      {/* Секція з контактами */}
+      <Container maxWidth="lg" className={styles.section}>
+        <Typography variant="h3" component="h2" className={styles.sectionTitle}>
+          Зв'яжіться з нами
+        </Typography>
+        <Typography variant="h6" className={styles.sectionSubtitle}>
+          Маєте питання? Зв'яжіться з нами, і ми з радістю допоможемо
+        </Typography>
+        
+        <Grid container spacing={4} className={styles.contactGrid}>
+          <Grid item xs={12} md={6}>
+            <Paper className={styles.contactCard}>
+              <Typography variant="h5" component="h3" className={styles.contactTitle}>
+                Контактна інформація
+              </Typography>
+              <Box className={styles.contactInfo}>
+                <Typography variant="body1" className={styles.contactText}>
+                  <strong>Адреса:</strong> вул. Спортивна, 123, м. Київ
+                </Typography>
+                <Typography variant="body1" className={styles.contactText}>
+                  <strong>Телефон:</strong> +380 44 123 4567
+                </Typography>
+                <Typography variant="body1" className={styles.contactText}>
+                  <strong>Email:</strong> info@sportclub.com
+                </Typography>
+                <Typography variant="body1" className={styles.contactText}>
+                  <strong>Графік роботи:</strong> Пн-Пт: 7:00 - 22:00, Сб-Нд: 9:00 - 20:00
+                </Typography>
+              </Box>
+            </Paper>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Paper className={styles.contactCard}>
+              <Typography variant="h5" component="h3" className={styles.contactTitle}>
+                Запишіться на безкоштовну консультацію
+              </Typography>
+              <Typography variant="body1" className={styles.contactText}>
+                Заповніть форму нижче, і наш менеджер зв'яжеться з вами найближчим часом.
+              </Typography>
+              <Box className={styles.contactForm}>
+                <Button 
+                  variant="contained" 
+                  color="primary" 
+                  fullWidth
+                  onClick={() => navigate('/registration')}
+                >
+                  Зареєструватися
+                </Button>
+              </Box>
+            </Paper>
+          </Grid>
+        </Grid>
+      </Container>
     </div>
   );
 };

@@ -30,11 +30,6 @@ const Header = () => {
           </Link>
           {isAuth ? (
             <div className={styles.buttons}>
-              {/* <Link to="/add-post">
-                <Button color="primary" variant="contained">
-                  Make a post
-                </Button>
-              </Link> */}
               <Button onClick={onClickLogout} color="error" variant="contained">
                 Вийти
               </Button>
@@ -50,7 +45,7 @@ const Header = () => {
               <Link to="/login">
                 <Button variant="outlined">Увійти</Button>
               </Link>
-              <Link to="/register">
+              <Link to="/registration">
                 <Button variant="contained">Реєстрація</Button>
               </Link>
             </div>
