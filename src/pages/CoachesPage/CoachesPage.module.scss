@@ -1,0 +1,191 @@
+.coachesPage {
+  padding: 2rem 0;
+  min-height: 80vh;
+}
+
+.pageTitle {
+  margin-bottom: 2rem;
+  text-align: center;
+  font-weight: 600;
+  color: #333;
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background-color: #1976d2;
+    border-radius: 2px;
+  }
+}
+
+.searchContainer {
+  margin-bottom: 2rem;
+}
+
+.searchField {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  
+  .MuiOutlinedInput-root {
+    border-radius: 8px;
+    
+    &:hover .MuiOutlinedInput-notchedOutline {
+      border-color: #1976d2;
+    }
+    
+    &.Mui-focused .MuiOutlinedInput-notchedOutline {
+      border-color: #1976d2;
+      border-width: 2px;
+    }
+  }
+}
+
+.coachesGrid {
+  margin-bottom: 2rem;
+}
+
+.coachCard {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.coachImage {
+  object-fit: cover;
+  transition: transform 0.5s ease;
+  
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+.coachContent {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+}
+
+.coachName {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.ratingContainer {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.rating {
+  margin-right: 0.5rem;
+  color: #ff9800;
+}
+
+.specializationContainer {
+  margin-bottom: 0.75rem;
+}
+
+.specializationChip {
+  font-weight: 500;
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.coachDescription {
+  margin-bottom: 1.5rem;
+  flex-grow: 1;
+  line-height: 1.5;
+  color: #666;
+}
+
+.viewButton {
+  margin-top: auto;
+  padding: 0.75rem;
+  font-weight: 600;
+  text-transform: none;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+  
+  &:hover {
+    background-color: #1565c0;
+  }
+}
+
+.paginationContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+  padding: 1rem 0;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
+
+.loadingText {
+  margin-top: 1rem;
+  color: #666;
+}
+
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+}
+
+.retryButton {
+  margin-top: 1rem;
+}
+
+.noResultsContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 40vh;
+  text-align: center;
+  color: #666;
+}
+
+// Адаптивність для мобільних пристроїв
+@media (max-width: 600px) {
+  .coachesPage {
+    padding: 1rem 0;
+  }
+  
+  .pageTitle {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .searchContainer {
+    margin-bottom: 1.5rem;
+  }
+  
+  .coachCard {
+    margin-bottom: 1rem;
+  }
+}
