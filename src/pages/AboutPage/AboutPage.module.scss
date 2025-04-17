@@ -1,0 +1,266 @@
+.aboutPage {
+  padding: 20px 0;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+/* Hero секція */
+.heroSection {
+  padding: 8rem 0;
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+    url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+  background-size: cover;
+  background-position: center;
+  color: white;
+  margin-bottom: 4rem;
+  text-align: center;
+}
+
+.heroTitle {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.heroSubtitle {
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+}
+
+/* Загальні стилі для секцій */
+.section {
+  padding: 4rem 0;
+
+  @media (max-width: 600px) {
+    padding: 40px 0;
+  }
+}
+
+.sectionTitle {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.sectionSubtitle {
+  text-align: center;
+  margin-bottom: 3rem;
+  color: #666;
+}
+
+/* Історія клубу */
+.aboutImageContainer {
+  position: relative;
+  height: 400px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+
+  @media (max-width: 600px) {
+    height: 300px;
+    margin-bottom: 2rem;
+  }
+}
+
+.aboutImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.aboutContent {
+  padding: 2rem;
+}
+
+.aboutTitle {
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+}
+
+.aboutDivider {
+  margin: 1.5rem 0;
+}
+
+.aboutText {
+  margin-bottom: 1rem;
+  color: #666;
+  line-height: 1.6;
+}
+
+.aboutButtons {
+  margin-top: 2rem;
+}
+
+/* Наші можливості */
+.featuresSection {
+  padding: 4rem 0;
+  background-color: #f9f9f9;
+}
+
+.featuresGrid {
+  margin-top: 2rem;
+}
+
+.featureCard {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 2rem;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: translateY(-10px);
+  }
+}
+
+.featureIcon {
+  margin-bottom: 1.5rem;
+  color: #f50057;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.featureTitle {
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.featureDescription {
+  color: #666;
+}
+
+/* Наша команда */
+.teamGrid {
+  margin-top: 2rem;
+}
+
+.teamCard {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+  }
+}
+
+.teamImageContainer {
+  position: relative;
+  height: 300px;
+  overflow: hidden;
+}
+
+.teamImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.teamInfo {
+  padding: 1.5rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.teamName {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.teamPosition {
+  color: #f50057;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.teamDescription {
+  color: #666;
+  line-height: 1.6;
+}
+
+/* Приєднуйтесь до нас */
+.joinSection {
+  padding: 4rem 0;
+  background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+    url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+  background-size: cover;
+  background-position: center;
+  color: white;
+  text-align: center;
+}
+
+.joinButtons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+  }
+}
+
+/* Адаптивний дизайн */
+@media (max-width: 600px) {
+  .heroSection {
+    padding: 4rem 0;
+  }
+
+  .heroTitle {
+    font-size: 2.5rem;
+  }
+
+  .heroSubtitle {
+    font-size: 1.2rem;
+  }
+
+  .sectionTitle {
+    font-size: 2rem !important;
+  }
+
+  .sectionSubtitle {
+    font-size: 1rem;
+  }
+
+  .featureCard {
+    padding: 1.5rem;
+  }
+
+  .featureIcon {
+    font-size: 36px;
+    margin-bottom: 16px;
+  }
+
+  .featureTitle {
+    font-size: 1.25rem;
+    margin-bottom: 12px;
+  }
+
+  .featureDescription {
+    font-size: 0.875rem;
+  }
+
+  .teamImageContainer {
+    height: 250px;
+  }
+
+  .teamName {
+    font-size: 1.25rem;
+  }
+
+  .teamPosition {
+    font-size: 0.875rem;
+  }
+
+  .teamDescription {
+    font-size: 0.875rem;
+  }
+}

@@ -1,15 +1,15 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import axios from '../../axios';
 
 // Базовий URL для API
-const API_URL = 'http://localhost:5000/api/coach';
+// const API_URL = 'http://localhost:5000/api/coach';
 
 // Асинхронні thunks для взаємодії з API
 export const fetchAllCoaches = createAsyncThunk(
   'coach/fetchAllCoaches',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${API_URL}`);
+      const response = await axios.get(`/api/coach`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -21,7 +21,7 @@ export const fetchCoachById = createAsyncThunk(
   'coach/fetchCoachById',
   async (id, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${API_URL}/${id}`);
+      const response = await axios.get(`/api/coach/${id}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -34,7 +34,7 @@ export const createCoach = createAsyncThunk(
   async (coachData, { rejectWithValue, getState }) => {
     try {
       const { auth } = getState();
-      const response = await axios.post(`${API_URL}`, coachData, {
+      const response = await axios.post(`/api/coach`, coachData, {
         headers: {
           Authorization: `Bearer ${auth.token}`,
         },
@@ -51,7 +51,7 @@ export const updateCoach = createAsyncThunk(
   async ({ id, coachData }, { rejectWithValue, getState }) => {
     try {
       const { auth } = getState();
-      const response = await axios.put(`${API_URL}/${id}`, coachData, {
+      const response = await axios.put(`/api/coach/${id}`, coachData, {
         headers: {
           Authorization: `Bearer ${auth.token}`,
         },
@@ -68,7 +68,7 @@ export const deleteCoach = createAsyncThunk(
   async (id, { rejectWithValue, getState }) => {
     try {
       const { auth } = getState();
-      const response = await axios.delete(`${API_URL}/${id}`, {
+      const response = await axios.delete(`/api/coach/${id}`, {
         headers: {
           Authorization: `Bearer ${auth.token}`,
         },
@@ -85,7 +85,7 @@ export const addReview = createAsyncThunk(
   async ({ id, reviewData }, { rejectWithValue, getState }) => {
     try {
       const { auth } = getState();
-      const response = await axios.post(`${API_URL}/${id}/review`, reviewData, {
+      const response = await axios.post(`/api/coach/${id}/review`, reviewData, {
         headers: {
           Authorization: `Bearer ${auth.token}`,
         },
@@ -107,7 +107,7 @@ export const uploadCoachPhotos = createAsyncThunk(
         formData.append('photos', photo);
       });
 
-      const response = await axios.post(`${API_URL}/${id}/photos`, formData, {
+      const response = await axios.post(`/api/coach/${id}/photos`, formData, {
         headers: {
           Authorization: `Bearer ${auth.token}`,
           'Content-Type': 'multipart/form-data',
@@ -125,7 +125,7 @@ export const deleteCoachPhoto = createAsyncThunk(
   async ({ id, photoId }, { rejectWithValue, getState }) => {
     try {
       const { auth } = getState();
-      const response = await axios.delete(`${API_URL}/${id}/photos`, {
+      const response = await axios.delete(`/api/coach/${id}/photos`, {
         headers: {
           Authorization: `Bearer ${auth.token}`,
         },

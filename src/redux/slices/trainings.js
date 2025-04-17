@@ -1,15 +1,15 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import axios from '../../axios';
 
 // Базовий URL для API
-const API_URL = 'http://localhost:5000/api/training';
+// const API_URL = 'http://localhost:5000/api/training';
 
 // Асинхронні thunks для взаємодії з API
 export const fetchAllTrainings = createAsyncThunk(
   'trainings/fetchAllTrainings',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${API_URL}`);
+      const response = await axios.get(`/api/training`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -21,7 +21,7 @@ export const fetchTrainingById = createAsyncThunk(
   'trainings/fetchTrainingById',
   async (id, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${API_URL}/${id}`);
+      const response = await axios.get(`/api/training/${id}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -34,7 +34,7 @@ export const createTraining = createAsyncThunk(
   async (trainingData, { rejectWithValue, getState }) => {
     try {
       const { auth } = getState();
-      const response = await axios.post(`${API_URL}`, trainingData, {
+      const response = await axios.post(`/api/training`, trainingData, {
         headers: {
           Authorization: `Bearer ${auth.token}`,
         },
@@ -51,7 +51,7 @@ export const updateTraining = createAsyncThunk(
   async ({ id, trainingData }, { rejectWithValue, getState }) => {
     try {
       const { auth } = getState();
-      const response = await axios.put(`${API_URL}/${id}`, trainingData, {
+      const response = await axios.put(`/api/training/${id}`, trainingData, {
         headers: {
           Authorization: `Bearer ${auth.token}`,
         },
@@ -68,7 +68,7 @@ export const deleteTraining = createAsyncThunk(
   async (id, { rejectWithValue, getState }) => {
     try {
       const { auth } = getState();
-      const response = await axios.delete(`${API_URL}/${id}`, {
+      const response = await axios.delete(`/api/training/${id}`, {
         headers: {
           Authorization: `Bearer ${auth.token}`,
         },
@@ -86,7 +86,7 @@ export const enrollTraining = createAsyncThunk(
     try {
       const { auth } = getState();
       const response = await axios.post(
-        `${API_URL}/${id}/enroll`,
+        `/api/training/${id}/enroll`,
         {},
         {
           headers: {
@@ -107,7 +107,7 @@ export const cancelEnrollment = createAsyncThunk(
     try {
       const { auth } = getState();
       const response = await axios.post(
-        `${API_URL}/${id}/cancel`,
+        `/api/training/${id}/cancel`,
         {},
         {
           headers: {
@@ -132,7 +132,7 @@ export const uploadTrainingPhotos = createAsyncThunk(
         formData.append('photos', photo);
       });
 
-      const response = await axios.post(`${API_URL}/${id}/photos`, formData, {
+      const response = await axios.post(`/api/training/${id}/photos`, formData, {
         headers: {
           Authorization: `Bearer ${auth.token}`,
           'Content-Type': 'multipart/form-data',
@@ -150,7 +150,7 @@ export const deleteTrainingPhoto = createAsyncThunk(
   async ({ id, photoId }, { rejectWithValue, getState }) => {
     try {
       const { auth } = getState();
-      const response = await axios.delete(`${API_URL}/${id}/photos`, {
+      const response = await axios.delete(`/api/training/${id}/photos`, {
         headers: {
           Authorization: `Bearer ${auth.token}`,
         },

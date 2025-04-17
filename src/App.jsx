@@ -10,6 +10,9 @@ import Login from './pages/Login';
 import Registration from './pages/Registration';
 import CoachesPage from './pages/CoachesPage';
 import TrainingsPage from './pages/TrainingsPage';
+import Footer from './components/Footer';
+import AboutPage from './pages/AboutPage';
+import ContactPage from './pages/ContactPage';
 
 function App() {
   const dispatch = useDispatch();
@@ -28,8 +31,11 @@ function App() {
           <Route path="/registration" element={<Registration />} />
           <Route path="/coaches" element={<CoachesPage />} />
           <Route path="/trainings" element={<TrainingsPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/contacts" element={<ContactPage />} />
         </Routes>
       </Container>
+      <Footer />
     </div>
   );
 }

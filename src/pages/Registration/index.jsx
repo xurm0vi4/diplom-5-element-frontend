@@ -22,6 +22,7 @@ const Registration = () => {
       lastName: '',
       email: '',
       password: '',
+      confirmPassword: '',
     },
     mode: 'onChange',
   });
@@ -83,6 +84,15 @@ const Registration = () => {
           error={Boolean(errors.password?.message)}
           helperText={errors.password?.message}
           {...register('password', { required: 'Уведіть ваш пароль' })}
+          fullWidth
+        />
+        <TextField
+          className={styles.field}
+          label="Підтвердіть пароль"
+          type="password"
+          error={Boolean(errors.confirmPassword?.message)}
+          helperText={errors.confirmPassword?.message}
+          {...register('confirmPassword', { required: 'Уведіть ваш пароль' })}
           fullWidth
         />
         <Button disabled={!isValid} size="large" variant="contained" type="submit" fullWidth>

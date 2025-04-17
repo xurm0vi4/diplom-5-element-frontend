@@ -1,58 +1,182 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState } from 'react';
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  IconButton,
+  Box,
+  Menu,
+  MenuItem,
+  Container,
+  Avatar,
+  useTheme,
+  useMediaQuery,
+} from '@mui/material';
+import { Menu as MenuIcon, Person, ExitToApp } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../redux/slices/auth';
-
-import { Button, Container } from '@mui/material';
 import styles from './Header.module.scss';
 
 const Header = () => {
-  const dispatch = useDispatch();
-  const isAuth = useSelector((state) => Boolean(state.auth.data));
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const onClickLogout = () => {
-    if (window.confirm('Чи ви впевнені, що хочете вийти?')) {
-      dispatch(logout());
-      window.localStorage.removeItem('token');
-      navigate('/');
-    }
+  const { data } = useSelector((state) => state.auth);
+  const isAuthenticated = !!data;
+  const user = data;
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    dispatch(logout());
+    window.localStorage.removeItem('token');
+    handleMenuClose();
+    navigate('/');
+  };
+
+  const handleProfileClick = () => {
+    handleMenuClose();
+    navigate('/profile');
   };
 
   return (
-    <header className={styles.root}>
-      <Container maxWidth="lg" fixed>
-        <div className={styles.flex}>
-          <Link to="/">
-            <Button variant="contained" color="secondary">
-              5 елемент
-            </Button>
-          </Link>
-          {isAuth ? (
-            <div className={styles.buttons}>
-              <Button onClick={onClickLogout} color="error" variant="contained">
-                Вийти
+    <AppBar position="sticky" className={styles.header}>
+      <Container maxWidth="lg">
+        <Toolbar className={styles.toolbar}>
+          <Typography
+            variant="h6"
+            component="div"
+            className={styles.logo}
+            onClick={() => navigate('/')}>
+            Спортивний клуб
+          </Typography>
+
+          {!isMobile && (
+            <Box className={styles.navLinks}>
+              <Button color="inherit" onClick={() => navigate('/trainings')}>
+                Тренування
               </Button>
-            </div>
-          ) : (
-            <div className={styles.buttons}>
-              <Link to="/trainings">
-                <Button variant="outlined">Заняття</Button>
-              </Link>
-              <Link to="/coaches">
-                <Button variant="outlined">Тренери</Button>
-              </Link>
-              <Link to="/login">
-                <Button variant="outlined">Увійти</Button>
-              </Link>
-              <Link to="/registration">
-                <Button variant="contained">Реєстрація</Button>
-              </Link>
-            </div>
+              <Button color="inherit" onClick={() => navigate('/coaches')}>
+                Тренери
+              </Button>
+              <Button color="inherit" onClick={() => navigate('/about')}>
+                Про нас
+              </Button>
+              <Button color="inherit" onClick={() => navigate('/contacts')}>
+                Контакти
+              </Button>
+            </Box>
           )}
-        </div>
+
+          <Box className={styles.authButtons}>
+            {isAuthenticated ? (
+              <>
+                <IconButton onClick={handleMenuOpen} className={styles.avatarButton}>
+                  <Avatar
+                    alt={user?.firstName || 'Користувач'}
+                    src={user?.avatar}
+                    className={styles.avatar}>
+                    {user?.firstName?.charAt(0) || 'U'}
+                  </Avatar>
+                </IconButton>
+                <Menu
+                  anchorEl={anchorEl}
+                  open={Boolean(anchorEl)}
+                  onClose={handleMenuClose}
+                  className={styles.menu}>
+                  <MenuItem onClick={handleProfileClick}>
+                    <Person fontSize="small" className={styles.menuIcon} />
+                    Профіль
+                  </MenuItem>
+                  <MenuItem onClick={handleLogout}>
+                    <ExitToApp fontSize="small" className={styles.menuIcon} />
+                    Вийти
+                  </MenuItem>
+                </Menu>
+              </>
+            ) : (
+              <>
+                <Button color="inherit" onClick={() => navigate('/login')}>
+                  Увійти
+                </Button>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => navigate('/registration')}>
+                  Зареєструватися
+                </Button>
+              </>
+            )}
+
+            {isMobile && (
+              <IconButton color="inherit" onClick={handleMenuOpen} className={styles.menuButton}>
+                <MenuIcon />
+              </IconButton>
+            )}
+          </Box>
+        </Toolbar>
       </Container>
-    </header>
+
+      {isMobile && (
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleMenuClose}
+          className={styles.mobileMenu}>
+          <MenuItem
+            onClick={() => {
+              navigate('/trainings');
+              handleMenuClose();
+            }}>
+            Тренування
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              navigate('/coaches');
+              handleMenuClose();
+            }}>
+            Тренери
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              navigate('/about');
+              handleMenuClose();
+            }}>
+            Про нас
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              navigate('/contacts');
+              handleMenuClose();
+            }}>
+            Контакти
+          </MenuItem>
+          {isAuthenticated && (
+            <>
+              <MenuItem onClick={handleProfileClick}>
+                <Person fontSize="small" className={styles.menuIcon} />
+                Профіль
+              </MenuItem>
+              <MenuItem onClick={handleLogout}>
+                <ExitToApp fontSize="small" className={styles.menuIcon} />
+                Вийти
+              </MenuItem>
+            </>
+          )}
+        </Menu>
+      )}
+    </AppBar>
   );
 };
 
