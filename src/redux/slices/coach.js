@@ -142,9 +142,7 @@ export const deleteCoachPhoto = createAsyncThunk(
 const initialState = {
   coaches: [],
   currentCoach: null,
-  loading: false,
-  error: null,
-  success: false,
+  status: 'loading',
 };
 
 // Створення slice
@@ -166,56 +164,46 @@ const coachSlice = createSlice({
     builder
       // Отримання всіх тренерів
       .addCase(fetchAllCoaches.pending, (state) => {
-        state.loading = true;
-        state.error = null;
+        state.status = 'loading';
       })
       .addCase(fetchAllCoaches.fulfilled, (state, action) => {
-        state.loading = false;
+        state.status = 'loaded';
         state.coaches = action.payload;
       })
-      .addCase(fetchAllCoaches.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload?.message || 'Помилка при отриманні тренерів';
+      .addCase(fetchAllCoaches.rejected, (state) => {
+        state.status = 'error';
       })
 
       // Отримання тренера за ID
       .addCase(fetchCoachById.pending, (state) => {
-        state.loading = true;
-        state.error = null;
+        state.status = 'loading';
       })
       .addCase(fetchCoachById.fulfilled, (state, action) => {
-        state.loading = false;
+        state.status = 'loaded';
         state.currentCoach = action.payload;
       })
-      .addCase(fetchCoachById.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload?.message || 'Помилка при отриманні тренера';
+      .addCase(fetchCoachById.rejected, (state) => {
+        state.status = 'error';
       })
 
       // Створення тренера
       .addCase(createCoach.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-        state.success = false;
+        state.status = 'loading';
       })
       .addCase(createCoach.fulfilled, (state, action) => {
-        state.loading = false;
+        state.status = 'loaded';
         state.coaches.push(action.payload);
-        state.success = true;
       })
-      .addCase(createCoach.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload?.message || 'Помилка при створенні тренера';
+      .addCase(createCoach.rejected, (state) => {
+        state.status = 'error';
       })
 
       // Оновлення тренера
       .addCase(updateCoach.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-        state.success = false;
+        state.status = 'loading';
       })
       .addCase(updateCoach.fulfilled, (state, action) => {
-        state.loading = false;
+        state.status = 'loaded';
         const index = state.coaches.findIndex((coach) => coach._id === action.payload._id);
         if (index !== -1) {
           state.coaches[index] = action.payload;
@@ -223,86 +211,68 @@ const coachSlice = createSlice({
         if (state.currentCoach && state.currentCoach._id === action.payload._id) {
           state.currentCoach = action.payload;
         }
-        state.success = true;
       })
-      .addCase(updateCoach.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload?.message || 'Помилка при оновленні тренера';
+      .addCase(updateCoach.rejected, (state) => {
+        state.status = 'error';
       })
 
       // Видалення тренера
       .addCase(deleteCoach.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-        state.success = false;
+        state.status = 'loading';
       })
       .addCase(deleteCoach.fulfilled, (state, action) => {
-        state.loading = false;
+        state.status = 'loaded';
         state.coaches = state.coaches.filter((coach) => coach._id !== action.payload.id);
         if (state.currentCoach && state.currentCoach._id === action.payload.id) {
           state.currentCoach = null;
         }
-        state.success = true;
       })
-      .addCase(deleteCoach.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload?.message || 'Помилка при видаленні тренера';
+      .addCase(deleteCoach.rejected, (state) => {
+        state.status = 'error';
       })
 
       // Додавання відгуку
       .addCase(addReview.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-        state.success = false;
+        state.status = 'loading';
       })
       .addCase(addReview.fulfilled, (state, action) => {
-        state.loading = false;
+        state.status = 'loaded';
         if (state.currentCoach && state.currentCoach._id === action.payload.coachId) {
           state.currentCoach.reviews = action.payload.reviews;
         }
-        state.success = true;
       })
-      .addCase(addReview.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload?.message || 'Помилка при додаванні відгуку';
+      .addCase(addReview.rejected, (state) => {
+        state.status = 'error';
       })
 
       // Завантаження фото
       .addCase(uploadCoachPhotos.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-        state.success = false;
+        state.status = 'loading';
       })
       .addCase(uploadCoachPhotos.fulfilled, (state, action) => {
-        state.loading = false;
+        state.status = 'loaded';
         if (state.currentCoach && state.currentCoach._id === action.payload.coachId) {
           state.currentCoach.photos = action.payload.photos;
         }
-        state.success = true;
       })
-      .addCase(uploadCoachPhotos.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload?.message || 'Помилка при завантаженні фото';
+      .addCase(uploadCoachPhotos.rejected, (state) => {
+        state.status = 'error';
       })
 
       // Видалення фото
       .addCase(deleteCoachPhoto.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-        state.success = false;
+        state.status = 'loading';
       })
       .addCase(deleteCoachPhoto.fulfilled, (state, action) => {
-        state.loading = false;
+        state.status = 'loaded';
         if (state.currentCoach && state.currentCoach._id === action.payload.id) {
           state.currentCoach.photos = state.currentCoach.photos.filter(
             (photo) => photo._id !== action.payload.photoId,
           );
         }
-        state.success = true;
       })
-      .addCase(deleteCoachPhoto.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload?.message || 'Помилка при видаленні фото';
+      .addCase(deleteCoachPhoto.rejected, (state) => {
+        state.status = 'error';
       });
   },
 });

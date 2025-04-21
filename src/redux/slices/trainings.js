@@ -167,9 +167,7 @@ export const deleteTrainingPhoto = createAsyncThunk(
 const initialState = {
   trainings: [],
   currentTraining: null,
-  loading: false,
-  error: null,
-  success: false,
+  status: 'loading',
 };
 
 // Створення slice
@@ -191,56 +189,49 @@ const trainingsSlice = createSlice({
     builder
       // Отримання всіх тренувань
       .addCase(fetchAllTrainings.pending, (state) => {
-        state.loading = true;
-        state.error = null;
+        state.status = 'loading';
       })
       .addCase(fetchAllTrainings.fulfilled, (state, action) => {
-        state.loading = false;
+        state.status = 'loaded';
         state.trainings = action.payload;
       })
       .addCase(fetchAllTrainings.rejected, (state, action) => {
-        state.loading = false;
+        state.status = 'error';
         state.error = action.payload?.message || 'Помилка при отриманні тренувань';
       })
 
       // Отримання тренування за ID
       .addCase(fetchTrainingById.pending, (state) => {
-        state.loading = true;
-        state.error = null;
+        state.status = 'loading';
       })
       .addCase(fetchTrainingById.fulfilled, (state, action) => {
-        state.loading = false;
+        state.status = 'loaded';
         state.currentTraining = action.payload;
       })
       .addCase(fetchTrainingById.rejected, (state, action) => {
-        state.loading = false;
+        state.status = 'error';
         state.error = action.payload?.message || 'Помилка при отриманні тренування';
       })
 
       // Створення тренування
       .addCase(createTraining.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-        state.success = false;
+        state.status = 'loading';
       })
       .addCase(createTraining.fulfilled, (state, action) => {
-        state.loading = false;
+        state.status = 'loaded';
         state.trainings.push(action.payload);
-        state.success = true;
       })
       .addCase(createTraining.rejected, (state, action) => {
-        state.loading = false;
+        state.status = 'error';
         state.error = action.payload?.message || 'Помилка при створенні тренування';
       })
 
       // Оновлення тренування
       .addCase(updateTraining.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-        state.success = false;
+        state.status = 'loading';
       })
       .addCase(updateTraining.fulfilled, (state, action) => {
-        state.loading = false;
+        state.status = 'loaded';
         const index = state.trainings.findIndex((training) => training._id === action.payload._id);
         if (index !== -1) {
           state.trainings[index] = action.payload;
@@ -248,103 +239,87 @@ const trainingsSlice = createSlice({
         if (state.currentTraining && state.currentTraining._id === action.payload._id) {
           state.currentTraining = action.payload;
         }
-        state.success = true;
       })
       .addCase(updateTraining.rejected, (state, action) => {
-        state.loading = false;
+        state.status = 'error';
         state.error = action.payload?.message || 'Помилка при оновленні тренування';
       })
 
       // Видалення тренування
       .addCase(deleteTraining.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-        state.success = false;
+        state.status = 'loading';
       })
       .addCase(deleteTraining.fulfilled, (state, action) => {
-        state.loading = false;
+        state.status = 'loaded';
         state.trainings = state.trainings.filter((training) => training._id !== action.payload.id);
         if (state.currentTraining && state.currentTraining._id === action.payload.id) {
           state.currentTraining = null;
         }
-        state.success = true;
       })
       .addCase(deleteTraining.rejected, (state, action) => {
-        state.loading = false;
+        state.status = 'error';
         state.error = action.payload?.message || 'Помилка при видаленні тренування';
       })
 
       // Запис на тренування
       .addCase(enrollTraining.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-        state.success = false;
+        state.status = 'loading';
       })
       .addCase(enrollTraining.fulfilled, (state, action) => {
-        state.loading = false;
+        state.status = 'loaded';
         if (state.currentTraining && state.currentTraining._id === action.payload.trainingId) {
           state.currentTraining.enrolledUsers = action.payload.enrolledUsers;
         }
-        state.success = true;
       })
       .addCase(enrollTraining.rejected, (state, action) => {
-        state.loading = false;
+        state.status = 'error';
         state.error = action.payload?.message || 'Помилка при записі на тренування';
       })
 
       // Скасування запису на тренування
       .addCase(cancelEnrollment.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-        state.success = false;
+        state.status = 'loading';
       })
       .addCase(cancelEnrollment.fulfilled, (state, action) => {
-        state.loading = false;
+        state.status = 'loaded';
         if (state.currentTraining && state.currentTraining._id === action.payload.trainingId) {
           state.currentTraining.enrolledUsers = action.payload.enrolledUsers;
         }
-        state.success = true;
       })
       .addCase(cancelEnrollment.rejected, (state, action) => {
-        state.loading = false;
+        state.status = 'error';
         state.error = action.payload?.message || 'Помилка при скасуванні запису на тренування';
       })
 
       // Завантаження фото
       .addCase(uploadTrainingPhotos.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-        state.success = false;
+        state.status = 'loading';
       })
       .addCase(uploadTrainingPhotos.fulfilled, (state, action) => {
-        state.loading = false;
+        state.status = 'loaded';
         if (state.currentTraining && state.currentTraining._id === action.payload.trainingId) {
           state.currentTraining.photos = action.payload.photos;
         }
-        state.success = true;
       })
       .addCase(uploadTrainingPhotos.rejected, (state, action) => {
-        state.loading = false;
+        state.status = 'error';
         state.error = action.payload?.message || 'Помилка при завантаженні фото';
       })
 
       // Видалення фото
       .addCase(deleteTrainingPhoto.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-        state.success = false;
+        state.status = 'loading';
       })
       .addCase(deleteTrainingPhoto.fulfilled, (state, action) => {
-        state.loading = false;
+        state.status = 'loaded';
         if (state.currentTraining && state.currentTraining._id === action.payload.id) {
           state.currentTraining.photos = state.currentTraining.photos.filter(
             (photo) => photo._id !== action.payload.photoId,
           );
         }
-        state.success = true;
       })
       .addCase(deleteTrainingPhoto.rejected, (state, action) => {
-        state.loading = false;
+        state.status = 'error';
         state.error = action.payload?.message || 'Помилка при видаленні фото';
       });
   },

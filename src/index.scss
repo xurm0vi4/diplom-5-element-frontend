@@ -80,3 +80,65 @@ body {
 .wrapper {
   min-height: 100%;
 }
+
+.coach-profile {
+  padding: 20px 0;
+
+  .coach-info {
+    margin-bottom: 20px;
+
+    h2 {
+      margin-bottom: 15px;
+    }
+
+    p {
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+  }
+
+  .coach-photos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+
+    img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+  }
+}
+
+.training-details {
+  padding: 20px 0;
+
+  .training-info {
+    margin-bottom: 20px;
+
+    h2 {
+      margin-bottom: 15px;
+    }
+
+    p {
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+  }
+
+  .training-photos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+
+    img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+  }
+}

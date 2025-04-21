@@ -16,6 +16,11 @@ export const fetchAuthMe = createAsyncThunk('auth/fetchAuthMe', async () => {
   return data;
 });
 
+export const updateUser = createAsyncThunk('auth/updateUser', async (params) => {
+  const { data } = await axios.put('/api/auth/user', params);
+  return data;
+});
+
 const initialState = {
   data: null,
   status: 'loading',
@@ -65,6 +70,16 @@ const authSlice = createSlice({
       })
       .addCase(fetchRegister.rejected, (state) => {
         state.data = null;
+        state.status = 'error';
+      })
+      .addCase(updateUser.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(updateUser.fulfilled, (state, action) => {
+        state.data = action.payload;
+        state.status = 'loaded';
+      })
+      .addCase(updateUser.rejected, (state) => {
         state.status = 'error';
       });
   },

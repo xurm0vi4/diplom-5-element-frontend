@@ -59,7 +59,7 @@ const Header = () => {
             component="div"
             className={styles.logo}
             onClick={() => navigate('/')}>
-            Спортивний клуб
+            5 елемент
           </Typography>
 
           {!isMobile && (

@@ -1,27 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { 
-  Grid, 
-  Card, 
-  CardContent, 
-  CardMedia, 
-  Typography, 
-  Button, 
-  Box, 
-  Rating, 
-  Chip, 
-  CircularProgress, 
-  TextField, 
+import {
+  Grid,
+  Card,
+  CardContent,
+  CardMedia,
+  Typography,
+  Button,
+  Box,
+  Rating,
+  Chip,
+  CircularProgress,
+  TextField,
   InputAdornment,
-  Pagination
+  Pagination,
 } from '@mui/material';
 import { Search, Star } from '@mui/icons-material';
 import { fetchAllCoaches } from '../../redux/slices/coach';
 import styles from './CoachesPage.module.scss';
+import { API_URL } from '../../constants/api';
 
 const CoachesPage = () => {
   const dispatch = useDispatch();
-  const { coaches = [], loading = false, error = null } = useSelector((state) => state.coach || {});
+  const { coaches = [], status } = useSelector((state) => state.coach || {});
+  console.log(coaches);
   const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(1);
   const coachesPerPage = 6;
@@ -31,10 +33,12 @@ const CoachesPage = () => {
   }, [dispatch]);
 
   // Фільтрація тренерів за пошуковим запитом
-  const filteredCoaches = coaches?.filter(coach => 
-    coach?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    coach?.specialization?.toLowerCase().includes(searchTerm.toLowerCase())
-  ) || [];
+  const filteredCoaches =
+    coaches?.filter(
+      (coach) =>
+        coach?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        coach?.specialization?.toLowerCase().includes(searchTerm.toLowerCase()),
+    ) || [];
 
   // Пагінація
   const indexOfLastCoach = page * coachesPerPage;
@@ -51,7 +55,7 @@ const CoachesPage = () => {
     setPage(1); // Скидаємо на першу сторінку при пошуку
   };
 
-  if (loading) {
+  if (status === 'loading') {
     return (
       <Box className={styles.loadingContainer}>
         <CircularProgress />
@@ -62,18 +66,17 @@ const CoachesPage = () => {
     );
   }
 
-  if (error) {
+  if (status === 'error') {
     return (
       <Box className={styles.errorContainer}>
         <Typography variant="h6" color="error">
-          Помилка: {error}
+          Помилка
         </Typography>
-        <Button 
-          variant="contained" 
-          color="primary" 
+        <Button
+          variant="contained"
+          color="primary"
           onClick={() => dispatch(fetchAllCoaches())}
-          className={styles.retryButton}
-        >
+          className={styles.retryButton}>
           Спробувати знову
         </Button>
       </Box>
@@ -85,7 +88,7 @@ const CoachesPage = () => {
       <Typography variant="h4" component="h1" className={styles.pageTitle}>
         Наші тренери
       </Typography>
-      
+
       <Box className={styles.searchContainer}>
         <TextField
           fullWidth
@@ -119,9 +122,11 @@ const CoachesPage = () => {
                   <CardMedia
                     component="img"
                     height="200"
-                    image={coach.photos && coach.photos.length > 0 
-                      ? coach.photos[0] 
-                      : 'https://via.placeholder.com/300x200?text=Тренер'}
+                    image={
+                      coach.photos && coach.photos.length > 0
+                        ? `${API_URL}${coach.photos[0]}`
+                        : 'https://via.placeholder.com/300x200?text=Тренер'
+                    }
                     alt={coach.name}
                     className={styles.coachImage}
                   />
@@ -129,12 +134,15 @@ const CoachesPage = () => {
                     <Typography variant="h6" component="div" className={styles.coachName}>
                       {coach.name}
                     </Typography>
-                    
+
                     <Box className={styles.ratingContainer}>
-                      <Rating 
-                        value={coach.rating || 0} 
-                        precision={0.5} 
-                        readOnly 
+                      <Rating
+                        value={
+                          coach?.reviews?.reduce((acc, review) => acc + review.rating, 0) /
+                            (coach?.reviews?.length || 1) || 0
+                        }
+                        precision={0.5}
+                        readOnly
                         icon={<Star fontSize="inherit" />}
                         className={styles.rating}
                       />
@@ -142,35 +150,33 @@ const CoachesPage = () => {
                         ({coach.reviews ? coach.reviews.length : 0} відгуків)
                       </Typography>
                     </Box>
-                    
+
                     <Box className={styles.specializationContainer}>
                       {coach.specialization && (
-                        <Chip 
-                          label={coach.specialization} 
-                          color="primary" 
-                          size="small" 
+                        <Chip
+                          label={coach.specialization}
+                          color="primary"
+                          size="small"
                           className={styles.specializationChip}
                         />
                       )}
                     </Box>
-                    
-                    <Typography 
-                      variant="body2" 
-                      color="text.secondary" 
-                      className={styles.coachDescription}
-                    >
-                      {coach.description 
-                        ? `${coach.description.substring(0, 100)}...` 
+
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      className={styles.coachDescription}>
+                      {coach.description
+                        ? `${coach.description.substring(0, 100)}...`
                         : 'Опис відсутній'}
                     </Typography>
-                    
-                    <Button 
-                      variant="contained" 
-                      color="primary" 
-                      fullWidth 
+
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      fullWidth
                       className={styles.viewButton}
-                      href={`/coaches/${coach._id}`}
-                    >
+                      href={`/coaches/${coach._id}`}>
                       Детальніше
                     </Button>
                   </CardContent>
@@ -178,14 +184,14 @@ const CoachesPage = () => {
               </Grid>
             ))}
           </Grid>
-          
+
           {pageCount > 1 && (
             <Box className={styles.paginationContainer}>
-              <Pagination 
-                count={pageCount} 
-                page={page} 
-                onChange={handlePageChange} 
-                color="primary" 
+              <Pagination
+                count={pageCount}
+                page={page}
+                onChange={handlePageChange}
+                color="primary"
                 size="large"
               />
             </Box>

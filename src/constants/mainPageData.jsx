@@ -11,27 +11,27 @@ export const advantages = [
   {
     title: 'Професійні тренери',
     description: 'Наші тренери мають багаторічний досвід та сертифікати',
-    icon: 'fitness_center',
+    icon: <FitnessCenter />,
   },
   {
     title: 'Сучасне обладнання',
     description: 'Новітнє спортивне обладнання для ефективних тренувань',
-    icon: 'sports_gymnastics',
+    icon: <SportsGymnastics />,
   },
   {
     title: 'Басейн',
     description: 'Олімпійський басейн з професійними тренерами',
-    icon: 'pool',
+    icon: <Pool />,
   },
   {
     title: 'Бойові мистецтва',
     description: 'Різноманітні секції бойових мистецтв для всіх рівнів',
-    icon: 'sports_martial_arts',
+    icon: <SportsMartialArts />,
   },
   {
     title: 'Теніс',
     description: 'Професійні корти та тренування з досвідченими тренерами',
-    icon: 'sports_tennis',
+    icon: <SportsTennis />,
   },
 ];
 
@@ -46,10 +46,10 @@ export const clubPhotos = [
 
 // Категорії тренувань
 export const categories = [
-  { id: 'fitness', name: 'Фітнес', icon: 'fitness_center' },
-  { id: 'yoga', name: 'Йога', icon: 'sports' },
-  { id: 'dance', name: 'Танці', icon: 'people' },
-  { id: 'martial_arts', name: 'Бойові мистецтва', icon: 'sports' },
-  { id: 'swimming', name: 'Плавання', icon: 'sports' },
-  { id: 'team_sports', name: 'Командні види спорту', icon: 'people' },
+  { id: 'fitness', name: 'Фітнес', icon: <FitnessCenter /> },
+  { id: 'yoga', name: 'Йога', icon: <SportsGymnastics /> },
+  { id: 'dance', name: 'Танці', icon: <SportsTennis /> },
+  { id: 'martial_arts', name: 'Бойові мистецтва', icon: <SportsMartialArts /> },
+  { id: 'swimming', name: 'Плавання', icon: <Pool /> },
+  { id: 'team_sports', name: 'Командні види спорту', icon: <SportsTennis /> },
 ];

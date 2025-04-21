@@ -9,10 +9,13 @@ import Header from './components/Header';
 import Login from './pages/Login';
 import Registration from './pages/Registration';
 import CoachesPage from './pages/CoachesPage';
+import CoachPage from './pages/CoachesPage/CoachPage';
 import TrainingsPage from './pages/TrainingsPage';
+import TrainingDetails from './pages/TrainingsPage/TrainingPage';
 import Footer from './components/Footer';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
+import ProfilePage from './pages/ProfilePage/ProfilePage';
 
 function App() {
   const dispatch = useDispatch();
@@ -30,9 +33,12 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/registration" element={<Registration />} />
           <Route path="/coaches" element={<CoachesPage />} />
+          <Route path="/coaches/:id" element={<CoachPage />} />
           <Route path="/trainings" element={<TrainingsPage />} />
+          <Route path="/trainings/:id" element={<TrainingDetails />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contacts" element={<ContactPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
         </Routes>
       </Container>
       <Footer />

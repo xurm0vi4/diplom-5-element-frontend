@@ -99,7 +99,7 @@ const MainPage = () => {
           <Grid container spacing={4} alignItems="center">
             <Grid item xs={12} md={6}>
               <Typography variant="h2" component="h1" className={styles.heroTitle}>
-                Спортивний клуб "Чемпіон"
+                Спортивний клуб "5 елемент"
               </Typography>
               <Typography variant="h5" className={styles.heroSubtitle}>
                 Ваш шлях до здорового способу життя
@@ -199,9 +199,7 @@ const MainPage = () => {
                 className={styles.categoryCard}
                 onClick={() => handleCategoryClick(category.id)}>
                 <CardContent className={styles.categoryContent}>
-                  <Box className={styles.categoryIcon}>
-                    <span className="material-icons">{category.icon}</span>
-                  </Box>
+                  <Box className={styles.categoryIcon}>{category.icon}</Box>
                   <Typography variant="h5" component="h3" className={styles.categoryTitle}>
                     {category.name}
                   </Typography>
