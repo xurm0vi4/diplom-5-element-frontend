@@ -23,6 +23,10 @@ import {
   DialogContent,
   DialogActions,
   Alert,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from '@mui/material';
 import {
   ArrowBack,
@@ -33,7 +37,13 @@ import {
   Close,
   Edit as EditIcon,
 } from '@mui/icons-material';
-import { fetchCoachById, updateCoach, deleteCoachPhoto, addReview } from '../../redux/slices/coach';
+import {
+  fetchCoachById,
+  updateCoach,
+  deleteCoachPhoto,
+  addReview,
+  uploadCoachPhotos,
+} from '../../redux/slices/coach';
 import { canEditCoach } from '../../utils/roleUtils';
 import styles from './CoachPage.module.scss';
 import { API_URL } from '../../constants/api';
@@ -43,7 +53,7 @@ const CoachPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { data: user } = useSelector((state) => state.auth);
-  const { currentCoach: coach, status } = useSelector((state) => state.coach);
+  const { currentCoach: coach, status, categories } = useSelector((state) => state.coach);
   console.log(coach);
   const canEdit = canEditCoach(user, coach);
 
@@ -55,18 +65,13 @@ const CoachPage = () => {
   const [photoDialogMode, setPhotoDialogMode] = useState('view'); // 'view' or 'delete'
   const [selectedPhotoId, setSelectedPhotoId] = useState(null);
 
-  const {
-    register: registerEdit,
-    handleSubmit: handleSubmitEdit,
-    reset: resetEdit,
-    formState: { errors: editErrors },
-  } = useForm({
-    defaultValues: {
-      name: '',
-      description: '',
-      specialization: '',
-      experience: '',
-    },
+  const [editForm, setEditForm] = useState({
+    firstName: '',
+    lastName: '',
+    age: '',
+    specialization: [],
+    experience: '',
+    description: '',
   });
 
   const {
@@ -91,14 +96,16 @@ const CoachPage = () => {
 
   useEffect(() => {
     if (coach) {
-      resetEdit({
-        name: coach.name || '',
-        description: coach.description || '',
-        specialization: coach.specialization || '',
+      setEditForm({
+        firstName: coach.user.firstName || '',
+        lastName: coach.user.lastName || '',
+        age: coach.age || '',
+        specialization: coach.specialization || [],
         experience: coach.experience || '',
+        description: coach.description || '',
       });
     }
-  }, [coach, resetEdit]);
+  }, [coach]);
 
   const handleBack = () => {
     navigate('/coaches');
@@ -106,7 +113,18 @@ const CoachPage = () => {
 
   const handleEditSubmit = async (data) => {
     try {
-      await dispatch(updateCoach({ id, ...data })).unwrap();
+      const coachData = {
+        id,
+        description: data.description,
+        specialization: data.specialization,
+        experience: data.experience,
+        age: data.age,
+        user: {
+          firstName: data.firstName,
+          lastName: data.lastName,
+        },
+      };
+      await dispatch(updateCoach(coachData)).unwrap();
       setIsEditing(false);
       dispatch(fetchCoachById(id));
     } catch (error) {
@@ -145,17 +163,26 @@ const CoachPage = () => {
   };
 
   const handlePhotoUpload = async (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setPhotoPreview(URL.createObjectURL(file));
-      setPhotoDialogOpen(true);
+    const files = Array.from(event.target.files);
+    if (files.length > 0) {
+      try {
+        await dispatch(uploadCoachPhotos({ id, photos: files })).unwrap();
+        setPhotoPreview(null);
+        setPhotoDialogOpen(false);
+      } catch (error) {
+        console.error('Помилка при завантаженні фото:', error);
+      }
     }
   };
 
-  const handlePhotoDelete = (photoId) => {
-    setSelectedPhotoId(photoId);
-    setPhotoDialogMode('delete');
-    setPhotoDialogOpen(true);
+  const handlePhotoDelete = async (filename) => {
+    try {
+      await dispatch(deleteCoachPhoto({ id, filename })).unwrap();
+      setPhotoDialogOpen(false);
+      setSelectedPhotoId(null);
+    } catch (error) {
+      console.error('Помилка при видаленні фото:', error);
+    }
   };
 
   const closePhotoDialog = () => {
@@ -218,7 +245,7 @@ const CoachPage = () => {
           <Grid item xs={12} md={4} className={styles.avatarContainer}>
             <Avatar
               src={coach.photos && coach.photos.length > 0 ? `${API_URL}${coach.photos[0]}` : null}
-              alt={coach.name}
+              alt={`${coach.user.firstName} ${coach.user.lastName}`}
               className={styles.avatar}
               onClick={() => console.log(coach.photos[0])}
             />
@@ -234,40 +261,75 @@ const CoachPage = () => {
           </Grid>
           <Grid item xs={12} md={8} className={styles.infoContainer}>
             {isEditing ? (
-              <Box component="form" onSubmit={handleSubmitEdit(handleEditSubmit)}>
+              <Box
+                component="form"
+                onSubmit={handleEditSubmit(editForm)}
+                className={styles.editForm}>
                 <TextField
                   fullWidth
                   label="Ім'я"
-                  {...registerEdit('name', { required: "Ім'я обов'язкове" })}
-                  error={!!editErrors.name}
-                  helperText={editErrors.name?.message}
+                  {...registerReview('firstName')}
                   margin="normal"
+                  className={styles.input}
                 />
                 <TextField
                   fullWidth
-                  label="Опис"
-                  {...registerEdit('description')}
+                  label="Прізвище"
+                  {...registerReview('lastName')}
                   margin="normal"
-                  multiline
-                  rows={4}
+                  className={styles.input}
                 />
-                <TextField
-                  fullWidth
-                  label="Спеціалізація"
-                  {...registerEdit('specialization')}
-                  margin="normal"
-                />
+                <Grid item xs={12}>
+                  <FormControl fullWidth className={styles.input}>
+                    <InputLabel>Спеціалізація</InputLabel>
+                    <Select
+                      multiple
+                      value={editForm.specialization}
+                      onChange={(e) => setEditForm({ ...editForm, specialization: e.target.value })}
+                      renderValue={(selected) => (
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                          {selected.map((value) => (
+                            <Chip
+                              key={value}
+                              label={categories?.find((cat) => cat._id === value)?.name}
+                            />
+                          ))}
+                        </Box>
+                      )}>
+                      {categories?.map((category) => (
+                        <MenuItem key={category._id} value={category._id}>
+                          {category.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
                 <TextField
                   fullWidth
                   label="Досвід (років)"
                   type="number"
-                  {...registerEdit('experience', {
+                  {...registerReview('experience', {
                     min: { value: 0, message: "Досвід не може бути від'ємним" },
                     pattern: { value: /^[0-9]+$/, message: 'Введіть ціле число' },
                   })}
-                  error={!!editErrors.experience}
-                  helperText={editErrors.experience?.message}
+                  error={!!reviewErrors.experience}
+                  helperText={reviewErrors.experience?.message}
                   margin="normal"
+                  className={styles.input}
+                />
+                <TextField
+                  fullWidth
+                  label="Вік"
+                  type="number"
+                  {...registerReview('age', {
+                    min: { value: 18, message: 'Вік не може бути менше 18 років' },
+                    max: { value: 100, message: 'Вік не може бути більше 100 років' },
+                    pattern: { value: /^[0-9]+$/, message: 'Введіть ціле число' },
+                  })}
+                  error={!!reviewErrors.age}
+                  helperText={reviewErrors.age?.message}
+                  margin="normal"
+                  className={styles.input}
                 />
                 <Box className={styles.editActions}>
                   <Button variant="contained" color="primary" type="submit">
@@ -281,7 +343,7 @@ const CoachPage = () => {
             ) : (
               <>
                 <Typography variant="h4" component="h1" className={styles.coachName}>
-                  {coach.name}
+                  {coach.user.firstName} {coach.user.lastName}
                 </Typography>
 
                 <Box className={styles.ratingContainer}>
@@ -301,13 +363,27 @@ const CoachPage = () => {
                 </Box>
 
                 <Box className={styles.specializationContainer}>
-                  {coach.specialization && (
-                    <Chip
-                      label={coach.specialization}
-                      color="primary"
-                      className={styles.specializationChip}
-                    />
-                  )}
+                  {coach.specialization?.map((spec) => {
+                    const category = categories?.find((cat) => cat._id === spec);
+                    return (
+                      category && (
+                        <Chip
+                          key={spec}
+                          label={category.name}
+                          className={styles.specializationChip}
+                        />
+                      )
+                    );
+                  })}
+                </Box>
+
+                <Box className={styles.infoContainer}>
+                  <Typography variant="body1" className={styles.infoItem}>
+                    <strong>Вік:</strong> {coach.age || 'Не вказано'}
+                  </Typography>
+                  <Typography variant="body1" className={styles.infoItem}>
+                    <strong>Досвід:</strong> {coach.experience || 'Не вказано'} років
+                  </Typography>
                 </Box>
 
                 <Typography variant="body1" className={styles.description}>
@@ -346,14 +422,14 @@ const CoachPage = () => {
                     component="img"
                     height="140"
                     image={photo.startsWith('http') ? photo : `${API_URL}${photo}`}
-                    alt={`Фото тренера ${coach.name}`}
+                    alt={`Фото тренера ${coach.user.firstName} ${coach.user.lastName}`}
                     className={styles.photoImage}
                     onClick={() => handlePhotoClick(photo)}
                   />
                   {canEdit && (
                     <IconButton
                       className={styles.deletePhotoButton}
-                      onClick={() => handlePhotoDelete(photo._id)}>
+                      onClick={() => handlePhotoDelete(photo)}>
                       <Delete />
                     </IconButton>
                   )}
@@ -504,10 +580,7 @@ const CoachPage = () => {
                 Скасувати
               </Button>
               <Button
-                onClick={() => {
-                  dispatch(deleteCoachPhoto({ id, photoId: selectedPhotoId }));
-                  closePhotoDialog();
-                }}
+                onClick={() => handlePhotoDelete(photoPreview)}
                 color="error"
                 variant="contained">
                 Видалити

@@ -97,46 +97,26 @@ export const addReview = createAsyncThunk(
   },
 );
 
-export const uploadCoachPhotos = createAsyncThunk(
-  'coach/uploadCoachPhotos',
-  async ({ id, photos }, { rejectWithValue, getState }) => {
-    try {
-      const { auth } = getState();
-      const formData = new FormData();
-      photos.forEach((photo) => {
-        formData.append('photos', photo);
-      });
+export const uploadCoachPhotos = createAsyncThunk('coach/uploadPhotos', async ({ id, photos }) => {
+  const formData = new FormData();
+  photos.forEach((photo) => {
+    formData.append('photos', photo);
+  });
 
-      const response = await axios.post(`/api/coach/${id}/photos`, formData, {
-        headers: {
-          Authorization: `Bearer ${auth.token}`,
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(error.response.data);
-    }
-  },
-);
+  const { data } = await axios.post(`/api/coach/${id}/photos`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return data;
+});
 
-export const deleteCoachPhoto = createAsyncThunk(
-  'coach/deleteCoachPhoto',
-  async ({ id, photoId }, { rejectWithValue, getState }) => {
-    try {
-      const { auth } = getState();
-      const response = await axios.delete(`/api/coach/${id}/photos`, {
-        headers: {
-          Authorization: `Bearer ${auth.token}`,
-        },
-        data: { photoId },
-      });
-      return { id, photoId, ...response.data };
-    } catch (error) {
-      return rejectWithValue(error.response.data);
-    }
-  },
-);
+export const deleteCoachPhoto = createAsyncThunk('coach/deletePhoto', async ({ id, filename }) => {
+  const { data } = await axios.delete(`/api/coach/${id}/photos`, {
+    data: { filename },
+  });
+  return data;
+});
 
 // Початковий стан
 const initialState = {
@@ -251,9 +231,7 @@ const coachSlice = createSlice({
       })
       .addCase(uploadCoachPhotos.fulfilled, (state, action) => {
         state.status = 'loaded';
-        if (state.currentCoach && state.currentCoach._id === action.payload.coachId) {
-          state.currentCoach.photos = action.payload.photos;
-        }
+        state.currentCoach.photos = action.payload.photos;
       })
       .addCase(uploadCoachPhotos.rejected, (state) => {
         state.status = 'error';
@@ -265,11 +243,7 @@ const coachSlice = createSlice({
       })
       .addCase(deleteCoachPhoto.fulfilled, (state, action) => {
         state.status = 'loaded';
-        if (state.currentCoach && state.currentCoach._id === action.payload.id) {
-          state.currentCoach.photos = state.currentCoach.photos.filter(
-            (photo) => photo._id !== action.payload.photoId,
-          );
-        }
+        state.currentCoach.photos = action.payload.photos;
       })
       .addCase(deleteCoachPhoto.rejected, (state) => {
         state.status = 'error';

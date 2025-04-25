@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { 
-  Box, 
-  Typography, 
-  Grid, 
-  Paper, 
-  Button, 
-  CircularProgress, 
-  Card, 
-  CardContent, 
+import {
+  Box,
+  Typography,
+  Grid,
+  Paper,
+  Button,
+  CircularProgress,
+  Card,
+  CardContent,
   CardMedia,
   CardActions,
   Chip,
@@ -20,70 +20,83 @@ import {
   Select,
   MenuItem,
   Pagination,
-  Alert
+  Alert,
 } from '@mui/material';
-import { 
-  Search, 
+import {
+  Search,
   FilterList,
   Add as AddIcon,
   LocationOn,
   AccessTime,
-  Group
+  Group,
+  Person,
 } from '@mui/icons-material';
 import { fetchAllTrainings } from '../../redux/slices/trainings';
+import { fetchCategories } from '../../redux/slices/category';
 import styles from './TrainingsPage.module.scss';
 
 const TrainingsPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { trainings, loading, error } = useSelector((state) => state.trainings || {});
+  const { categories, status: categoriesStatus } = useSelector((state) => state.category || {});
   const { isAuthenticated } = useSelector((state) => state.auth || {});
-  
+
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterCategory, setFilterCategory] = useState('all');
-  const [filterLocation, setFilterLocation] = useState('all');
+  const [filterCategory, setFilterCategory] = useState(searchParams.get('category') || 'all');
+  const [filterCoach, setFilterCoach] = useState(searchParams.get('coach') || 'all');
   const [page, setPage] = useState(1);
   const [itemsPerPage] = useState(9);
-  
-  // Категорії тренувань
-  const categories = [
-    { id: 'all', name: 'Всі категорії' },
-    { id: 'fitness', name: 'Фітнес' },
-    { id: 'yoga', name: 'Йога' },
-    { id: 'dance', name: 'Танці' },
-    { id: 'martial_arts', name: 'Бойові мистецтва' },
-    { id: 'swimming', name: 'Плавання' },
-    { id: 'team_sports', name: 'Командні види спорту' }
-  ];
-  
-  // Локації тренувань
-  const locations = [
-    { id: 'all', name: 'Всі локації' },
-    { id: 'kyiv', name: 'Київ' },
-    { id: 'lviv', name: 'Львів' },
-    { id: 'odesa', name: 'Одеса' },
-    { id: 'kharkiv', name: 'Харків' },
-    { id: 'dnipro', name: 'Дніпро' }
-  ];
 
   useEffect(() => {
-    // Завантаження тренувань при першому рендері
-    dispatch(fetchAllTrainings());
-  }, [dispatch]);
+    // Отримуємо параметри з URL
+    const category = searchParams.get('category');
+    const coach = searchParams.get('coach');
+
+    // Оновлюємо локальний стан
+    if (category) setFilterCategory(category);
+    if (coach) setFilterCoach(coach);
+
+    // Завантажуємо тренування з фільтрами
+    dispatch(fetchAllTrainings({ category, coach }));
+    dispatch(fetchCategories());
+  }, [dispatch, searchParams]);
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
-    setPage(1); // Скидаємо на першу сторінку при зміні пошуку
+    setPage(1);
   };
 
   const handleCategoryChange = (e) => {
-    setFilterCategory(e.target.value);
+    const newCategory = e.target.value;
+    console.log(newCategory);
+    setFilterCategory(newCategory);
     setPage(1);
+
+    // Оновлюємо URL з новим параметром категорії
+    const params = new URLSearchParams(searchParams);
+    if (newCategory === 'all') {
+      params.delete('category');
+    } else {
+      params.set('category', newCategory);
+    }
+    setSearchParams(params);
   };
 
-  const handleLocationChange = (e) => {
-    setFilterLocation(e.target.value);
+  const handleCoachChange = (e) => {
+    const newCoach = e.target.value;
+    setFilterCoach(newCoach);
     setPage(1);
+
+    // Оновлюємо URL з новим параметром тренера
+    const params = new URLSearchParams(searchParams);
+    if (newCoach === 'all') {
+      params.delete('coach');
+    } else {
+      params.set('coach', newCoach);
+    }
+    setSearchParams(params);
   };
 
   const handlePageChange = (event, value) => {
@@ -102,12 +115,12 @@ const TrainingsPage = () => {
     navigate(`/trainings/${trainingId}`);
   };
 
-  if (loading) {
+  if (loading || categoriesStatus === 'loading') {
     return (
       <Box className={styles.loadingContainer}>
         <CircularProgress />
         <Typography variant="h6" className={styles.loadingText}>
-          Завантаження тренувань...
+          Завантаження даних...
         </Typography>
       </Box>
     );
@@ -119,12 +132,11 @@ const TrainingsPage = () => {
         <Typography variant="h6" color="error">
           Помилка: {error}
         </Typography>
-        <Button 
-          variant="contained" 
-          color="primary" 
+        <Button
+          variant="contained"
+          color="primary"
           onClick={() => dispatch(fetchAllTrainings())}
-          className={styles.retryButton}
-        >
+          className={styles.retryButton}>
           Спробувати знову
         </Button>
       </Box>
@@ -132,20 +144,23 @@ const TrainingsPage = () => {
   }
 
   // Фільтрація тренувань
-  const filteredTrainings = trainings ? trainings.filter(training => {
-    // Фільтрація за пошуковим запитом
-    const matchesSearch = training.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                         training.description.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    // Фільтрація за категорією
-    const matchesCategory = filterCategory === 'all' || training.category === filterCategory;
-    
-    // Фільтрація за локацією
-    const matchesLocation = filterLocation === 'all' || training.location === filterLocation;
-    
-    return matchesSearch && matchesCategory && matchesLocation;
-  }) : [];
-  
+  const filteredTrainings = trainings
+    ? trainings.filter((training) => {
+        // Фільтрація за пошуковим запитом
+        const matchesSearch =
+          training.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          training.description.toLowerCase().includes(searchQuery.toLowerCase());
+
+        // Фільтрація за категорією
+        const matchesCategory = filterCategory === 'all' || training.category === filterCategory;
+
+        // Фільтрація за тренером
+        const matchesCoach = filterCoach === 'all' || training.coach?._id === filterCoach;
+
+        return matchesSearch && matchesCategory && matchesCoach;
+      })
+    : [];
+
   // Пагінація
   const indexOfLastItem = page * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -158,20 +173,19 @@ const TrainingsPage = () => {
         <Typography variant="h4" component="h1" className={styles.pageTitle}>
           Тренування
         </Typography>
-        
+
         {isAuthenticated && (
-          <Button 
-            variant="contained" 
-            color="primary" 
+          <Button
+            variant="contained"
+            color="primary"
             startIcon={<AddIcon />}
             onClick={handleCreateTraining}
-            className={styles.createButton}
-          >
+            className={styles.createButton}>
             Створити тренування
           </Button>
         )}
       </Box>
-      
+
       <Paper className={styles.filtersSection}>
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={12} md={4}>
@@ -191,7 +205,7 @@ const TrainingsPage = () => {
               className={styles.searchField}
             />
           </Grid>
-          
+
           <Grid item xs={12} sm={6} md={4}>
             <FormControl fullWidth variant="outlined">
               <InputLabel id="category-label">Категорія</InputLabel>
@@ -204,8 +218,8 @@ const TrainingsPage = () => {
                   <InputAdornment position="start">
                     <FilterList />
                   </InputAdornment>
-                }
-              >
+                }>
+                <MenuItem value="all">Всі категорії</MenuItem>
                 {categories.map((category) => (
                   <MenuItem key={category.id} value={category.id}>
                     {category.name}
@@ -214,32 +228,37 @@ const TrainingsPage = () => {
               </Select>
             </FormControl>
           </Grid>
-          
+
           <Grid item xs={12} sm={6} md={4}>
             <FormControl fullWidth variant="outlined">
-              <InputLabel id="location-label">Локація</InputLabel>
+              <InputLabel id="coach-label">Тренер</InputLabel>
               <Select
-                labelId="location-label"
-                value={filterLocation}
-                onChange={handleLocationChange}
-                label="Локація"
+                labelId="coach-label"
+                value={filterCoach}
+                onChange={handleCoachChange}
+                label="Тренер"
                 startAdornment={
                   <InputAdornment position="start">
-                    <LocationOn />
+                    <Person />
                   </InputAdornment>
-                }
-              >
-                {locations.map((location) => (
-                  <MenuItem key={location.id} value={location.id}>
-                    {location.name}
-                  </MenuItem>
-                ))}
+                }>
+                <MenuItem value="all">Всі тренера</MenuItem>
+                {trainings &&
+                  [...new Set(trainings.map((t) => t.coach?._id))].map((coachId) => {
+                    const coach = trainings.find((t) => t.coach?._id === coachId)?.coach;
+                    if (!coach) return null;
+                    return (
+                      <MenuItem key={coachId} value={coachId}>
+                        {coach.firstName} {coach.lastName}
+                      </MenuItem>
+                    );
+                  })}
               </Select>
             </FormControl>
           </Grid>
         </Grid>
       </Paper>
-      
+
       {filteredTrainings.length === 0 ? (
         <Paper className={styles.noResultsSection}>
           <Typography variant="h6" className={styles.noResultsText}>
@@ -249,13 +268,12 @@ const TrainingsPage = () => {
             Спробуйте змінити параметри пошуку або створіть нове тренування
           </Typography>
           {isAuthenticated && (
-            <Button 
-              variant="contained" 
-              color="primary" 
+            <Button
+              variant="contained"
+              color="primary"
               startIcon={<AddIcon />}
               onClick={handleCreateTraining}
-              className={styles.createButton}
-            >
+              className={styles.createButton}>
               Створити тренування
             </Button>
           )}
@@ -265,10 +283,9 @@ const TrainingsPage = () => {
           <Grid container spacing={3} className={styles.trainingsGrid}>
             {currentTrainings.map((training) => (
               <Grid item xs={12} sm={6} md={4} key={training._id}>
-                <Card 
+                <Card
                   className={styles.trainingCard}
-                  onClick={() => handleTrainingClick(training._id)}
-                >
+                  onClick={() => handleTrainingClick(training._id)}>
                   <CardMedia
                     component="img"
                     height="200"
@@ -280,22 +297,18 @@ const TrainingsPage = () => {
                     <Typography variant="h6" component="h2" className={styles.trainingTitle}>
                       {training.title}
                     </Typography>
-                    
+
                     <Box className={styles.trainingInfo}>
                       <Box className={styles.infoItem}>
                         <LocationOn fontSize="small" />
-                        <Typography variant="body2">
-                          {training.location}
-                        </Typography>
+                        <Typography variant="body2">{training.location}</Typography>
                       </Box>
-                      
+
                       <Box className={styles.infoItem}>
                         <AccessTime fontSize="small" />
-                        <Typography variant="body2">
-                          {training.duration} хв
-                        </Typography>
+                        <Typography variant="body2">{training.duration} хв</Typography>
                       </Box>
-                      
+
                       <Box className={styles.infoItem}>
                         <Group fontSize="small" />
                         <Typography variant="body2">
@@ -303,16 +316,16 @@ const TrainingsPage = () => {
                         </Typography>
                       </Box>
                     </Box>
-                    
+
                     <Box className={styles.categoryContainer}>
-                      <Chip 
-                        label={training.category} 
-                        color="primary" 
+                      <Chip
+                        label={training.category}
+                        color="primary"
                         size="small"
                         className={styles.categoryChip}
                       />
                     </Box>
-                    
+
                     <Typography variant="body2" className={styles.trainingDescription}>
                       {training.description}
                     </Typography>
@@ -321,12 +334,11 @@ const TrainingsPage = () => {
                     <Typography variant="h6" color="primary" className={styles.trainingPrice}>
                       {training.price} ₴
                     </Typography>
-                    <Button 
-                      variant="contained" 
+                    <Button
+                      variant="contained"
                       color="primary"
                       size="small"
-                      className={styles.detailsButton}
-                    >
+                      className={styles.detailsButton}>
                       Деталі
                     </Button>
                   </CardActions>
@@ -334,14 +346,14 @@ const TrainingsPage = () => {
               </Grid>
             ))}
           </Grid>
-          
+
           {totalPages > 1 && (
             <Box className={styles.paginationContainer}>
-              <Pagination 
-                count={totalPages} 
-                page={page} 
-                onChange={handlePageChange} 
-                color="primary" 
+              <Pagination
+                count={totalPages}
+                page={page}
+                onChange={handlePageChange}
+                color="primary"
                 size="large"
               />
             </Box>

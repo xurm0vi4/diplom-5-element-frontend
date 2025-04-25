@@ -44,9 +44,12 @@ import { advantages, clubPhotos, categories } from '../../constants/mainPageData
 import styles from './MainPage.module.scss';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+import axios from '../../axios';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import { fetchCategories } from '../../redux/slices/category';
+import { CategoryCard } from '../../components/CategoryCard';
 
 const MainPage = () => {
   const navigate = useNavigate();
@@ -55,12 +58,14 @@ const MainPage = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { trainings, loading } = useSelector((state) => state.trainings || {});
   const { isAuthenticated } = useSelector((state) => state.auth || {});
+  const { categories, status } = useSelector((state) => state.category);
 
   // Стан для діалогу перегляду фото
   const [selectedPhoto, setSelectedPhoto] = useState(null);
 
   useEffect(() => {
     dispatch(fetchAllTrainings());
+    dispatch(fetchCategories());
   }, [dispatch]);
 
   // Отримуємо популярні тренування (перші 3)
@@ -90,6 +95,36 @@ const MainPage = () => {
   const handleClosePhotoDialog = () => {
     setSelectedPhoto(null);
   };
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get('/api/category');
+        console.log('Categories:', response.data);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  if (status === 'loading') {
+    return (
+      <Box className={styles.loadingContainer}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (status === 'error') {
+    return (
+      <Box className={styles.errorContainer}>
+        <Typography variant="h6" color="error">
+          Помилка при завантаженні категорій
+        </Typography>
+      </Box>
+    );
+  }
 
   return (
     <div className={styles.mainPage}>
@@ -195,16 +230,12 @@ const MainPage = () => {
         <Grid container spacing={3} className={styles.categoriesGrid}>
           {categories.map((category) => (
             <Grid item xs={12} sm={6} md={4} key={category.id}>
-              <Card
-                className={styles.categoryCard}
-                onClick={() => handleCategoryClick(category.id)}>
-                <CardContent className={styles.categoryContent}>
-                  <Box className={styles.categoryIcon}>{category.icon}</Box>
-                  <Typography variant="h5" component="h3" className={styles.categoryTitle}>
-                    {category.name}
-                  </Typography>
-                </CardContent>
-              </Card>
+              <CategoryCard
+                id={category.id}
+                name={category.name}
+                description={category.description}
+                iconName={category.iconName}
+              />
             </Grid>
           ))}
         </Grid>

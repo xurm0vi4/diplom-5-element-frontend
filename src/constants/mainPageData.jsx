@@ -53,3 +53,12 @@ export const categories = [
   { id: 'swimming', name: 'Плавання', icon: <Pool /> },
   { id: 'team_sports', name: 'Командні види спорту', icon: <SportsTennis /> },
 ];
+
+export const iconMap = {
+  fitness: <FitnessCenter />,
+  yoga: <SportsGymnastics />,
+  dance: <SportsTennis />,
+  martial_arts: <SportsMartialArts />,
+  swimming: <Pool />,
+  team_sports: <SportsTennis />,
+};

@@ -18,6 +18,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../redux/slices/auth';
 import styles from './Header.module.scss';
+import { isAdmin, isCoach } from '../../utils/roleUtils';
 
 const Header = () => {
   const navigate = useNavigate();
@@ -48,6 +49,16 @@ const Header = () => {
   const handleProfileClick = () => {
     handleMenuClose();
     navigate('/profile');
+  };
+
+  const handleAdminClick = () => {
+    handleMenuClose();
+    navigate('/admin');
+  };
+
+  const handleCoachDashboardClick = () => {
+    handleMenuClose();
+    navigate('/coach-dashboard');
   };
 
   return (
@@ -99,6 +110,18 @@ const Header = () => {
                     <Person fontSize="small" className={styles.menuIcon} />
                     Профіль
                   </MenuItem>
+                  {isAdmin(user) && (
+                    <MenuItem onClick={handleAdminClick}>
+                      <Person fontSize="small" className={styles.menuIcon} />
+                      Панель адміна
+                    </MenuItem>
+                  )}
+                  {isCoach(user) && (
+                    <MenuItem onClick={handleCoachDashboardClick}>
+                      <Person fontSize="small" className={styles.menuIcon} />
+                      Панель тренера
+                    </MenuItem>
+                  )}
                   <MenuItem onClick={handleLogout}>
                     <ExitToApp fontSize="small" className={styles.menuIcon} />
                     Вийти
@@ -168,6 +191,18 @@ const Header = () => {
                 <Person fontSize="small" className={styles.menuIcon} />
                 Профіль
               </MenuItem>
+              {isAdmin(user) && (
+                <MenuItem onClick={handleAdminClick}>
+                  <Person fontSize="small" className={styles.menuIcon} />
+                  Панель адміна
+                </MenuItem>
+              )}
+              {isCoach(user) && (
+                <MenuItem onClick={handleCoachDashboardClick}>
+                  <Person fontSize="small" className={styles.menuIcon} />
+                  Панель тренера
+                </MenuItem>
+              )}
               <MenuItem onClick={handleLogout}>
                 <ExitToApp fontSize="small" className={styles.menuIcon} />
                 Вийти

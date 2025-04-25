@@ -1,9 +1,56 @@
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  Box,
+  Typography,
+  Grid,
+  Paper,
+  Button,
+  CircularProgress,
+  Card,
+  CardContent,
+  CardMedia,
+  CardActions,
+  Chip,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Alert,
+  Rating,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Avatar,
+  Divider,
+} from '@mui/material';
+import {
+  LocationOn,
+  AccessTime,
+  Group,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  ArrowBack,
+  PhotoCamera,
+  Send,
+  Person,
+  CalendarToday,
+} from '@mui/icons-material';
 import {
   fetchTrainingById,
   enrollTraining,
   cancelEnrollment,
   updateTraining,
 } from '../../redux/slices/trainings';
+import { fetchCategories } from '../../redux/slices/category';
 import { canEditTraining } from '../../utils/roleUtils';
 import styles from './TrainingPage.module.scss';
 
@@ -16,6 +63,7 @@ const TrainingPage = () => {
     loading,
     error,
   } = useSelector((state) => state.trainings || {});
+  const { categories, status: categoriesStatus } = useSelector((state) => state.category || {});
   const { user, isAuthenticated } = useSelector((state) => state.auth || {});
 
   const [review, setReview] = useState('');
@@ -39,6 +87,7 @@ const TrainingPage = () => {
   useEffect(() => {
     if (id) {
       dispatch(fetchTrainingById(id));
+      dispatch(fetchCategories());
     }
   }, [dispatch, id]);
 
@@ -139,12 +188,12 @@ const TrainingPage = () => {
   const isEnrolled = training?.enrolledUsers?.includes(user?._id);
   const canEdit = canEditTraining(user, training);
 
-  if (loading) {
+  if (loading || categoriesStatus === 'loading') {
     return (
       <Box className={styles.loadingContainer}>
         <CircularProgress />
         <Typography variant="h6" className={styles.loadingText}>
-          Завантаження тренування...
+          Завантаження даних...
         </Typography>
       </Box>
     );
@@ -237,13 +286,20 @@ const TrainingPage = () => {
                     multiline
                     rows={4}
                   />
-                  <TextField
-                    fullWidth
-                    label="Категорія"
-                    value={editForm.category}
-                    onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
-                    margin="normal"
-                  />
+                  <FormControl fullWidth variant="outlined">
+                    <InputLabel id="category-label">Категорія</InputLabel>
+                    <Select
+                      labelId="category-label"
+                      value={editForm.category}
+                      onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
+                      label="Категорія">
+                      {categories.map((category) => (
+                        <MenuItem key={category._id} value={category._id}>
+                          {category.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                   <TextField
                     fullWidth
                     label="Місце проведення"

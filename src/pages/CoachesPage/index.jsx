@@ -17,30 +17,37 @@ import {
 } from '@mui/material';
 import { Search, Star } from '@mui/icons-material';
 import { fetchAllCoaches } from '../../redux/slices/coach';
+import { fetchCategories } from '../../redux/slices/category';
 import styles from './CoachesPage.module.scss';
 import { API_URL } from '../../constants/api';
 
 const CoachesPage = () => {
   const dispatch = useDispatch();
   const { coaches = [], status } = useSelector((state) => state.coach || {});
-  console.log(coaches);
+  const { categories } = useSelector((state) => state.category);
   const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(1);
   const coachesPerPage = 6;
+  const [selectedSpecialization, setSelectedSpecialization] = useState('all');
 
   useEffect(() => {
     dispatch(fetchAllCoaches());
+    dispatch(fetchCategories());
   }, [dispatch]);
 
-  // Фільтрація тренерів за пошуковим запитом
-  const filteredCoaches =
-    coaches?.filter(
-      (coach) =>
-        coach?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        coach?.specialization?.toLowerCase().includes(searchTerm.toLowerCase()),
-    ) || [];
+  const filteredCoaches = coaches.filter((coach) => {
+    const matchesSearch =
+      searchTerm === '' ||
+      coach.user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      coach.user.lastName.toLowerCase().includes(searchTerm.toLowerCase());
 
-  // Пагінація
+    const matchesSpecialization =
+      selectedSpecialization === 'all' ||
+      coach.specialization?.some((spec) => spec === selectedSpecialization);
+
+    return matchesSearch && matchesSpecialization;
+  });
+
   const indexOfLastCoach = page * coachesPerPage;
   const indexOfFirstCoach = indexOfLastCoach - coachesPerPage;
   const currentCoaches = filteredCoaches.slice(indexOfFirstCoach, indexOfLastCoach);
@@ -52,7 +59,12 @@ const CoachesPage = () => {
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
-    setPage(1); // Скидаємо на першу сторінку при пошуку
+    setPage(1);
+  };
+
+  const handleSpecializationChange = (event) => {
+    setSelectedSpecialization(event.target.value);
+    setPage(1);
   };
 
   if (status === 'loading') {
@@ -107,6 +119,21 @@ const CoachesPage = () => {
         />
       </Box>
 
+      <Box className={styles.specializationContainer}>
+        <TextField
+          select
+          value={selectedSpecialization}
+          onChange={handleSpecializationChange}
+          className={styles.specializationField}>
+          <option value="all">Всі спеціалізації</option>
+          {categories?.map((category) => (
+            <option key={category._id} value={category._id}>
+              {category.name}
+            </option>
+          ))}
+        </TextField>
+      </Box>
+
       {filteredCoaches.length === 0 ? (
         <Box className={styles.noResultsContainer}>
           <Typography variant="h6">
@@ -127,12 +154,12 @@ const CoachesPage = () => {
                         ? `${API_URL}${coach.photos[0]}`
                         : 'https://via.placeholder.com/300x200?text=Тренер'
                     }
-                    alt={coach.name}
+                    alt={coach.user.firstName}
                     className={styles.coachImage}
                   />
                   <CardContent className={styles.coachContent}>
                     <Typography variant="h6" component="div" className={styles.coachName}>
-                      {coach.name}
+                      {coach.user.firstName} {coach.user.lastName}
                     </Typography>
 
                     <Box className={styles.ratingContainer}>
@@ -152,14 +179,18 @@ const CoachesPage = () => {
                     </Box>
 
                     <Box className={styles.specializationContainer}>
-                      {coach.specialization && (
-                        <Chip
-                          label={coach.specialization}
-                          color="primary"
-                          size="small"
-                          className={styles.specializationChip}
-                        />
-                      )}
+                      {coach?.specialization?.map((spec) => {
+                        const category = categories?.find((cat) => cat._id === spec);
+                        return (
+                          category && (
+                            <Chip
+                              key={spec}
+                              label={category.name}
+                              className={styles.specializationChip}
+                            />
+                          )
+                        );
+                      })}
                     </Box>
 
                     <Typography

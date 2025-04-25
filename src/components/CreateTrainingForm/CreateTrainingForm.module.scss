@@ -1,0 +1,75 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  .formRow {
+    display: flex;
+    gap: 16px;
+    width: 100%;
+  }
+
+  .input {
+    flex: 1;
+    margin-bottom: 16px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    .MuiOutlinedInput-root {
+      border-radius: 8px;
+    }
+
+    .MuiInputBase-input {
+      padding: 12px 16px;
+    }
+  }
+
+  .textarea {
+    width: 100%;
+    margin-bottom: 16px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    .MuiOutlinedInput-root {
+      border-radius: 8px;
+    }
+
+    .MuiInputBase-input {
+      padding: 12px 16px;
+    }
+  }
+
+  .formActions {
+    display: flex;
+    gap: 16px;
+    margin-top: 24px;
+    justify-content: flex-end;
+  }
+}
+
+.alert {
+  margin-bottom: 20px;
+}
+
+.actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.submitButton {
+  min-width: 200px;
+  padding: 12px 24px;
+  border-radius: 8px;
+  text-transform: none;
+  font-weight: 500;
+}
