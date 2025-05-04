@@ -11,7 +11,6 @@ import {
   Card,
   CardContent,
   CardMedia,
-  CardActions,
   Chip,
   TextField,
   FormControl,
@@ -19,17 +18,13 @@ import {
   Select,
   MenuItem,
   Alert,
-  Rating,
   IconButton,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
   Avatar,
+  Rating,
   Divider,
 } from '@mui/material';
 import {
@@ -40,37 +35,33 @@ import {
   Delete as DeleteIcon,
   ArrowBack,
   PhotoCamera,
-  Send,
   Person,
-  CalendarToday,
+  Star,
+  Send,
 } from '@mui/icons-material';
 import {
   fetchTrainingById,
-  enrollTraining,
-  cancelEnrollment,
   updateTraining,
+  uploadTrainingPhotos,
+  deleteTrainingPhoto,
+  addTrainingReview,
+  updateTrainingReview,
+  deleteTrainingReview,
 } from '../../redux/slices/trainings';
 import { fetchCategories } from '../../redux/slices/category';
 import { canEditTraining } from '../../utils/roleUtils';
 import styles from './TrainingPage.module.scss';
+import { API_URL } from '../../constants/api';
+import { useForm } from 'react-hook-form';
 
 const TrainingPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const {
-    currentTraining: training,
-    loading,
-    error,
-  } = useSelector((state) => state.trainings || {});
-  const { categories, status: categoriesStatus } = useSelector((state) => state.category || {});
-  const { user, isAuthenticated } = useSelector((state) => state.auth || {});
+  const { currentTraining: training, status } = useSelector((state) => state.training);
+  const { categories = [], status: categoriesStatus } = useSelector((state) => state.category);
+  const { data: user } = useSelector((state) => state.auth);
 
-  const [review, setReview] = useState('');
-  const [rating, setRating] = useState(0);
-  const [reviewError, setReviewError] = useState('');
-  const [reviewSuccess, setReviewSuccess] = useState(false);
-  const [selectedPhotos, setSelectedPhotos] = useState([]);
   const [photoDialogOpen, setPhotoDialogOpen] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -78,10 +69,34 @@ const TrainingPage = () => {
     title: '',
     description: '',
     category: '',
+    coach: '',
     location: '',
     duration: '',
-    maxParticipants: '',
-    price: '',
+    capacity: '',
+    isActive: true,
+    schedule: [],
+  });
+  const [uploadError, setUploadError] = useState('');
+  const [reviewError, setReviewError] = useState('');
+  const [reviewSuccess, setReviewSuccess] = useState('');
+  const [editReviewDialog, setEditReviewDialog] = useState(false);
+  const [deleteReviewDialog, setDeleteReviewDialog] = useState(false);
+  const [selectedReview, setSelectedReview] = useState(null);
+  const [deletePhotoDialogOpen, setDeletePhotoDialogOpen] = useState(false);
+  const [selectedPhotoId, setSelectedPhotoId] = useState(null);
+
+  const {
+    register: registerReview,
+    handleSubmit: handleSubmitReview,
+    reset: resetReview,
+    setValue: setReviewValue,
+    watch: watchReview,
+    formState: { errors: reviewErrors },
+  } = useForm({
+    defaultValues: {
+      rating: 5,
+      comment: '',
+    },
   });
 
   useEffect(() => {
@@ -96,11 +111,13 @@ const TrainingPage = () => {
       setEditForm({
         title: training.title || '',
         description: training.description || '',
-        category: training.category || '',
+        category: training.category?._id || '',
+        coach: training.coach?._id || '',
         location: training.location || '',
         duration: training.duration || '',
-        maxParticipants: training.maxParticipants || '',
-        price: training.price || '',
+        capacity: training.capacity || '',
+        isActive: training.isActive || true,
+        schedule: training.schedule || [],
       });
     }
   }, [training]);
@@ -109,43 +126,19 @@ const TrainingPage = () => {
     navigate('/trainings');
   };
 
-  const handleReviewChange = (e) => {
-    setReview(e.target.value);
-    setReviewError('');
-  };
-
-  const handleRatingChange = (event, newValue) => {
-    setRating(newValue);
-    setReviewError('');
-  };
-
-  const handleSubmitReview = () => {
-    if (!rating) {
-      setReviewError('Будь ласка, вкажіть рейтинг');
-      return;
-    }
-
-    if (!review.trim()) {
-      setReviewError('Будь ласка, напишіть відгук');
-      return;
-    }
-
-    // Тут буде логіка відправки відгуку на сервер
-    setReviewSuccess(true);
-    setReview('');
-    setRating(0);
-
-    // Скидаємо повідомлення про успіх через 3 секунди
-    setTimeout(() => {
-      setReviewSuccess(false);
-    }, 3000);
-  };
-
-  const handlePhotoUpload = (e) => {
+  const handlePhotoUpload = async (e) => {
     const files = Array.from(e.target.files);
-    setSelectedPhotos(files);
+    if (files.length === 0) return;
 
-    // Тут буде логіка завантаження фото на сервер
+    try {
+      setUploadError('');
+      const result = await dispatch(uploadTrainingPhotos({ id, photos: files })).unwrap();
+      console.log('Upload result:', result);
+      dispatch(fetchTrainingById(id));
+    } catch (error) {
+      console.error('Upload error:', error);
+      setUploadError(error.message || 'Помилка при завантаженні фотографій');
+    }
   };
 
   const handlePhotoClick = (photo) => {
@@ -158,26 +151,31 @@ const TrainingPage = () => {
     setSelectedPhoto(null);
   };
 
-  const handleDeletePhoto = (photoId) => {
-    // Тут буде логіка видалення фото
-    setPhotoDialogOpen(false);
-  };
-
-  const handleEnrollTraining = () => {
-    if (isAuthenticated) {
-      dispatch(enrollTraining(id));
-    } else {
-      navigate('/login', { state: { from: `/trainings/${id}` } });
+  const handleDeletePhoto = async (photoId) => {
+    try {
+      await dispatch(deleteTrainingPhoto({ id, photoId })).unwrap();
+      dispatch(fetchTrainingById(id));
+      setDeletePhotoDialogOpen(false);
+      setSelectedPhotoId(null);
+    } catch (error) {
+      console.error('Помилка при видаленні фотографії:', error);
     }
-  };
-
-  const handleCancelEnrollment = () => {
-    dispatch(cancelEnrollment(id));
   };
 
   const handleEditSubmit = async () => {
     try {
-      await dispatch(updateTraining({ id, ...editForm })).unwrap();
+      const trainingData = {
+        title: editForm.title,
+        description: editForm.description,
+        category: editForm.category,
+        coach: editForm.coach,
+        location: editForm.location,
+        duration: editForm.duration,
+        capacity: editForm.capacity,
+        schedule: editForm.schedule,
+      };
+
+      await dispatch(updateTraining({ id, trainingData })).unwrap();
       setIsEditing(false);
       dispatch(fetchTrainingById(id));
     } catch (error) {
@@ -185,10 +183,74 @@ const TrainingPage = () => {
     }
   };
 
-  const isEnrolled = training?.enrolledUsers?.includes(user?._id);
   const canEdit = canEditTraining(user, training);
 
-  if (loading || categoriesStatus === 'loading') {
+  const onSubmitReview = async (data) => {
+    try {
+      await dispatch(
+        addTrainingReview({
+          id,
+          reviewData: {
+            comment: data.comment,
+            rating: data.rating,
+          },
+        }),
+      ).unwrap();
+
+      resetReview();
+      setReviewSuccess('Ваш відгук успішно додано!');
+      setTimeout(() => setReviewSuccess(''), 3000);
+    } catch (error) {
+      setReviewError(error.message || 'Помилка при додаванні відгуку');
+    }
+  };
+
+  const handleEditReview = (review) => {
+    setSelectedReview(review);
+    setReviewValue('rating', review.rating);
+    setReviewValue('comment', review.comment);
+    setEditReviewDialog(true);
+  };
+
+  const handleUpdateReview = async (data) => {
+    try {
+      await dispatch(
+        updateTrainingReview({
+          id,
+          reviewId: selectedReview._id,
+          reviewData: {
+            comment: data.comment,
+            rating: data.rating,
+          },
+        }),
+      ).unwrap();
+
+      setEditReviewDialog(false);
+      setReviewSuccess('Відгук успішно оновлено!');
+      setTimeout(() => setReviewSuccess(''), 3000);
+    } catch (error) {
+      setReviewError(error.message || 'Помилка при оновленні відгуку');
+    }
+  };
+
+  const handleDeleteReview = async () => {
+    try {
+      await dispatch(
+        deleteTrainingReview({
+          id,
+          reviewId: selectedReview._id,
+        }),
+      ).unwrap();
+
+      setDeleteReviewDialog(false);
+      setReviewSuccess('Відгук успішно видалено!');
+      setTimeout(() => setReviewSuccess(''), 3000);
+    } catch (error) {
+      setReviewError(error.message || 'Помилка при видаленні відгуку');
+    }
+  };
+
+  if (status === 'loading' || categoriesStatus === 'loading') {
     return (
       <Box className={styles.loadingContainer}>
         <CircularProgress />
@@ -199,11 +261,11 @@ const TrainingPage = () => {
     );
   }
 
-  if (error) {
+  if (status === 'error') {
     return (
       <Box className={styles.errorContainer}>
         <Typography variant="h6" color="error">
-          Помилка: {error}
+          Помилка при завантаженні даних
         </Typography>
         <Button
           variant="contained"
@@ -230,6 +292,7 @@ const TrainingPage = () => {
       </Box>
     );
   }
+
   return (
     <div className={styles.trainingPage}>
       <Button
@@ -243,24 +306,16 @@ const TrainingPage = () => {
       <Paper className={styles.trainingHeader}>
         <Grid container spacing={3}>
           <Grid item xs={12} md={4}>
-            <Box className={styles.imageContainer}>
-              <img
-                src={training.image || 'https://via.placeholder.com/400x300?text=Тренування'}
-                alt={training.title}
-                className={styles.trainingImage}
-              />
-              {canEdit && (
-                <Button
-                  variant="contained"
-                  startIcon={<EditIcon />}
-                  onClick={() => setIsEditing(true)}
-                  className={styles.editButton}>
-                  Редагувати тренування
-                </Button>
-              )}
-            </Box>
+            {canEdit && (
+              <Button
+                variant="contained"
+                startIcon={<EditIcon />}
+                onClick={() => setIsEditing(true)}
+                className={styles.editButton}>
+                Редагувати тренування
+              </Button>
+            )}
           </Grid>
-
           <Grid item xs={12} md={8}>
             <Box className={styles.infoContainer}>
               {isEditing ? (
@@ -282,14 +337,13 @@ const TrainingPage = () => {
                     label="Опис"
                     value={editForm.description}
                     onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
-                    margin="normal"
                     multiline
                     rows={4}
+                    margin="normal"
                   />
-                  <FormControl fullWidth variant="outlined">
-                    <InputLabel id="category-label">Категорія</InputLabel>
+                  <FormControl fullWidth margin="normal">
+                    <InputLabel>Категорія</InputLabel>
                     <Select
-                      labelId="category-label"
                       value={editForm.category}
                       onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
                       label="Категорія">
@@ -309,90 +363,79 @@ const TrainingPage = () => {
                   />
                   <TextField
                     fullWidth
-                    label="Тривалість (хвилин)"
-                    type="number"
+                    label="Тривалість (хв)"
                     value={editForm.duration}
                     onChange={(e) => setEditForm({ ...editForm, duration: e.target.value })}
+                    type="number"
                     margin="normal"
                   />
                   <TextField
                     fullWidth
                     label="Максимальна кількість учасників"
+                    value={editForm.capacity}
+                    onChange={(e) => setEditForm({ ...editForm, capacity: e.target.value })}
                     type="number"
-                    value={editForm.maxParticipants}
-                    onChange={(e) => setEditForm({ ...editForm, maxParticipants: e.target.value })}
                     margin="normal"
                   />
-                  <TextField
-                    fullWidth
-                    label="Ціна"
-                    type="number"
-                    value={editForm.price}
-                    onChange={(e) => setEditForm({ ...editForm, price: e.target.value })}
-                    margin="normal"
-                  />
+                  <FormControl fullWidth margin="normal">
+                    <InputLabel>Статус</InputLabel>
+                    <Select
+                      value={editForm.isActive}
+                      onChange={(e) => setEditForm({ ...editForm, isActive: e.target.value })}
+                      label="Статус">
+                      <MenuItem value={true}>Активне</MenuItem>
+                      <MenuItem value={false}>Неактивне</MenuItem>
+                    </Select>
+                  </FormControl>
                   <Box className={styles.editActions}>
-                    <Button variant="contained" color="primary" type="submit">
-                      Зберегти
-                    </Button>
-                    <Button variant="outlined" onClick={() => setIsEditing(false)}>
+                    <Button
+                      variant="outlined"
+                      color="secondary"
+                      onClick={() => setIsEditing(false)}>
                       Скасувати
+                    </Button>
+                    <Button type="submit" variant="contained" color="primary">
+                      Зберегти
                     </Button>
                   </Box>
                 </Box>
               ) : (
                 <>
-                  <Typography variant="h4" component="h1" className={styles.trainingTitle}>
+                  <Typography variant="h4" className={styles.title}>
                     {training.title}
                   </Typography>
-
-                  <Box className={styles.ratingContainer}>
-                    <Rating
-                      value={training.rating || 0}
-                      precision={0.5}
-                      readOnly
-                      className={styles.rating}
-                    />
-                    <Typography variant="body1">
-                      ({training.reviews?.length || 0} відгуків)
-                    </Typography>
-                  </Box>
-
-                  <Box className={styles.categoryContainer}>
-                    <Chip
-                      label={training.category}
-                      color="primary"
-                      className={styles.categoryChip}
-                    />
-                  </Box>
-
-                  <Box className={styles.trainingInfo}>
-                    <Box className={styles.infoItem}>
-                      <LocationOn fontSize="small" />
-                      <Typography variant="body1">{training.location}</Typography>
-                    </Box>
-
-                    <Box className={styles.infoItem}>
-                      <AccessTime fontSize="small" />
-                      <Typography variant="body1">{training.duration} хвилин</Typography>
-                    </Box>
-
-                    <Box className={styles.infoItem}>
-                      <Group fontSize="small" />
-                      <Typography variant="body1">{training.maxParticipants} учасників</Typography>
-                    </Box>
-
-                    <Box className={styles.infoItem}>
-                      <CalendarToday fontSize="small" />
-                      <Typography variant="body1">
-                        {new Date(training.date).toLocaleDateString()}
-                      </Typography>
-                    </Box>
-                  </Box>
-
                   <Typography variant="body1" className={styles.description}>
                     {training.description}
                   </Typography>
+                  <Box className={styles.details}>
+                    <Chip icon={<LocationOn />} label={training.location} className={styles.chip} />
+                    <Chip
+                      icon={<AccessTime />}
+                      label={`${training.duration} хв`}
+                      className={styles.chip}
+                    />
+                    <Chip
+                      icon={<Group />}
+                      label={`${training.capacity} учасників`}
+                      className={styles.chip}
+                    />
+                    <Chip
+                      label={training.isActive ? 'Активне' : 'Неактивне'}
+                      color={training.isActive ? 'success' : 'error'}
+                      className={styles.chip}
+                    />
+                  </Box>
+                  <Box className={styles.coachInfo}>
+                    <Typography variant="h6" className={styles.coachTitle}>
+                      Тренер
+                    </Typography>
+                    <Button
+                      startIcon={<Person />}
+                      onClick={() => navigate(`/coaches/${training.coach._id}`)}
+                      className={styles.coachButton}>
+                      {training.coach.user.firstName} {training.coach.user.lastName}
+                    </Button>
+                  </Box>
                 </>
               )}
             </Box>
@@ -406,7 +449,7 @@ const TrainingPage = () => {
             Фотографії
           </Typography>
 
-          {isAuthenticated && user?._id === training.coach && (
+          {canEdit && (
             <Button
               variant="outlined"
               color="primary"
@@ -419,24 +462,33 @@ const TrainingPage = () => {
           )}
         </Box>
 
+        {uploadError && (
+          <Alert severity="error" className={styles.errorAlert}>
+            {uploadError}
+          </Alert>
+        )}
+
         {training.photos && training.photos.length > 0 ? (
           <Grid container spacing={2} className={styles.photosGrid}>
             {training.photos.map((photo) => (
-              <Grid item xs={12} sm={6} md={4} key={photo._id}>
+              <Grid item xs={12} sm={6} md={4} key={photo}>
                 <Card className={styles.photoCard} onClick={() => handlePhotoClick(photo)}>
                   <CardMedia
                     component="img"
                     height="200"
-                    image={photo.url}
+                    image={
+                      photo.startsWith('http') ? photo : `${API_URL}uploads/trainings/${photo}`
+                    }
                     alt="Фото тренування"
                     className={styles.photoImage}
                   />
-                  {isAuthenticated && user?._id === training.coach && (
+                  {canEdit && (
                     <IconButton
                       className={styles.deletePhotoButton}
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleDeletePhoto(photo._id);
+                        setSelectedPhotoId(photo);
+                        setDeletePhotoDialogOpen(true);
                       }}>
                       <DeleteIcon />
                     </IconButton>
@@ -453,21 +505,18 @@ const TrainingPage = () => {
       </Paper>
 
       <Paper className={styles.reviewsSection}>
-        <Typography variant="h5" className={styles.sectionTitle}>
+        <Typography variant="h5" component="h2" className={styles.sectionTitle}>
           Відгуки
         </Typography>
 
-        {isAuthenticated ? (
-          <Paper className={styles.reviewForm}>
-            <Typography variant="h6" className={styles.reviewFormTitle}>
+        {user ? (
+          <Box
+            component="form"
+            onSubmit={handleSubmitReview(onSubmitReview)}
+            className={styles.reviewForm}>
+            <Typography variant="subtitle1" className={styles.reviewFormTitle}>
               Залишити відгук
             </Typography>
-
-            {reviewSuccess && (
-              <Alert severity="success" className={styles.reviewAlert}>
-                Ваш відгук успішно додано!
-              </Alert>
-            )}
 
             {reviewError && (
               <Alert severity="error" className={styles.reviewAlert}>
@@ -475,12 +524,20 @@ const TrainingPage = () => {
               </Alert>
             )}
 
+            {reviewSuccess && (
+              <Alert severity="success" className={styles.reviewAlert}>
+                {reviewSuccess}
+              </Alert>
+            )}
+
             <Box className={styles.ratingInput}>
-              <Typography component="legend">Ваш рейтинг</Typography>
+              <Typography component="legend">Ваш рейтинг:</Typography>
               <Rating
-                name="rating"
-                value={rating}
-                onChange={handleRatingChange}
+                value={watchReview('rating')}
+                onChange={(event, newValue) => {
+                  setReviewValue('rating', newValue);
+                }}
+                icon={<Star fontSize="inherit" />}
                 className={styles.ratingStars}
               />
             </Box>
@@ -491,70 +548,90 @@ const TrainingPage = () => {
               rows={4}
               variant="outlined"
               label="Ваш відгук"
-              value={review}
-              onChange={handleReviewChange}
+              {...registerReview('comment', { required: "Текст відгуку обов'язковий" })}
+              error={!!reviewErrors.comment}
+              helperText={reviewErrors.comment?.message}
               className={styles.reviewTextField}
             />
 
             <Button
+              type="submit"
               variant="contained"
               color="primary"
               endIcon={<Send />}
-              onClick={handleSubmitReview}
               className={styles.submitButton}>
               Надіслати відгук
             </Button>
-          </Paper>
+          </Box>
         ) : (
           <Alert severity="info" className={styles.loginAlert}>
-            Будь ласка,{' '}
+            Щоб залишити відгук, будь ласка,{' '}
             <Button color="primary" onClick={() => navigate('/login')}>
               увійдіть
             </Button>{' '}
-            щоб залишити відгук
+            або{' '}
+            <Button color="primary" onClick={() => navigate('/register')}>
+              зареєструйтесь
+            </Button>
           </Alert>
         )}
 
         <Divider className={styles.divider} />
 
         {training.reviews && training.reviews.length > 0 ? (
-          <List className={styles.reviewsList}>
+          <Box className={styles.reviewsList}>
             {training.reviews.map((review) => (
-              <ListItem key={review._id} className={styles.reviewItem}>
-                <ListItemAvatar>
-                  <Avatar src={review.user.avatar}>
-                    <Person />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText
-                  primary={
-                    <Box className={styles.reviewHeader}>
-                      <Typography variant="subtitle1" className={styles.reviewerName}>
-                        {review.user.name}
-                      </Typography>
-                      <Rating value={review.rating} precision={0.5} readOnly size="small" />
-                    </Box>
-                  }
-                  secondary={
-                    <>
-                      <Typography
-                        variant="body2"
-                        color="textSecondary"
-                        className={styles.reviewDate}>
-                        {new Date(review.createdAt).toLocaleDateString('uk-UA')}
-                      </Typography>
-                      <Typography variant="body1" className={styles.reviewText}>
-                        {review.text}
-                      </Typography>
-                    </>
-                  }
-                />
-              </ListItem>
+              <Paper key={review._id} className={styles.reviewItem}>
+                <Box className={styles.reviewHeader}>
+                  <Box className={styles.reviewUser}>
+                    <Typography variant="subtitle1" className={styles.reviewerName}>
+                      {review.user.firstName} {review.user.lastName}
+                    </Typography>
+                    <Typography variant="body2" className={styles.reviewDate}>
+                      {new Date(review.createdAt).toLocaleDateString('uk-UA')}
+                    </Typography>
+                  </Box>
+                  <Box className={styles.reviewActions}>
+                    <Rating
+                      value={review.rating}
+                      precision={0.5}
+                      readOnly
+                      size="small"
+                      icon={<Star fontSize="inherit" />}
+                      className={styles.reviewRating}
+                    />
+                    {(user?._id === review.user._id || user?.role === 'admin') && (
+                      <Box className={styles.reviewButtons}>
+                        {user?._id === review.user._id && (
+                          <IconButton
+                            size="small"
+                            onClick={() => handleEditReview(review)}
+                            className={styles.editButton}>
+                            <EditIcon />
+                          </IconButton>
+                        )}
+                        <IconButton
+                          size="small"
+                          onClick={() => {
+                            setSelectedReview(review);
+                            setDeleteReviewDialog(true);
+                          }}
+                          className={styles.deleteButton}>
+                          <DeleteIcon />
+                        </IconButton>
+                      </Box>
+                    )}
+                  </Box>
+                </Box>
+                <Typography variant="body1" className={styles.reviewText}>
+                  {review.comment}
+                </Typography>
+              </Paper>
             ))}
-          </List>
+          </Box>
         ) : (
           <Typography variant="body1" className={styles.noReviewsText}>
-            Відгуків поки що немає
+            Поки немає відгуків. Будьте першим!
           </Typography>
         )}
       </Paper>
@@ -580,13 +657,82 @@ const TrainingPage = () => {
           )}
         </DialogContent>
         <DialogActions className={styles.photoDialogActions}>
-          {isAuthenticated && user?._id === training.coach && (
-            <Button color="error" onClick={() => handleDeletePhoto(selectedPhoto?._id)}>
+          {canEdit && (
+            <Button color="error" onClick={() => handleDeletePhoto(selectedPhoto?.filename)}>
               Видалити
             </Button>
           )}
           <Button onClick={handleClosePhotoDialog} color="primary">
             Закрити
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={editReviewDialog} onClose={() => setEditReviewDialog(false)}>
+        <DialogTitle>Редагувати відгук</DialogTitle>
+        <DialogContent>
+          <Box className={styles.ratingInput}>
+            <Typography component="legend">Ваш рейтинг:</Typography>
+            <Rating
+              value={watchReview('rating')}
+              onChange={(event, newValue) => {
+                setReviewValue('rating', newValue);
+              }}
+              icon={<Star fontSize="inherit" />}
+              className={styles.ratingStars}
+            />
+          </Box>
+          <TextField
+            fullWidth
+            multiline
+            rows={4}
+            variant="outlined"
+            label="Ваш відгук"
+            {...registerReview('comment', { required: "Текст відгуку обов'язковий" })}
+            error={!!reviewErrors.comment}
+            helperText={reviewErrors.comment?.message}
+            className={styles.reviewTextField}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setEditReviewDialog(false)}>Скасувати</Button>
+          <Button
+            onClick={handleSubmitReview(handleUpdateReview)}
+            variant="contained"
+            color="primary">
+            Зберегти
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={deleteReviewDialog} onClose={() => setDeleteReviewDialog(false)}>
+        <DialogTitle>Видалити відгук</DialogTitle>
+        <DialogContent>
+          <Typography>Ви впевнені, що хочете видалити цей відгук?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteReviewDialog(false)}>Скасувати</Button>
+          <Button onClick={handleDeleteReview} variant="contained" color="error">
+            Видалити
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={deletePhotoDialogOpen}
+        onClose={() => setDeletePhotoDialogOpen(false)}
+        className={styles.deletePhotoDialog}>
+        <DialogTitle>Видалити фото</DialogTitle>
+        <DialogContent>
+          <Typography>Ви впевнені, що хочете видалити це фото?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeletePhotoDialogOpen(false)}>Скасувати</Button>
+          <Button
+            onClick={() => handleDeletePhoto(selectedPhotoId)}
+            variant="contained"
+            color="error">
+            Видалити
           </Button>
         </DialogActions>
       </Dialog>

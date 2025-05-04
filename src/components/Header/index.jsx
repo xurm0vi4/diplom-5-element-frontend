@@ -19,6 +19,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../redux/slices/auth';
 import styles from './Header.module.scss';
 import { isAdmin, isCoach } from '../../utils/roleUtils';
+import { API_URL } from '../../constants/api';
 
 const Header = () => {
   const navigate = useNavigate();
@@ -96,9 +97,9 @@ const Header = () => {
                 <IconButton onClick={handleMenuOpen} className={styles.avatarButton}>
                   <Avatar
                     alt={user?.firstName || 'Користувач'}
-                    src={user?.avatar}
+                    src={user?.avatar ? `${API_URL}uploads/avatars/${user.avatar}` : null}
                     className={styles.avatar}>
-                    {user?.firstName?.charAt(0) || 'U'}
+                    {user?.firstName?.[0] || 'U'}
                   </Avatar>
                 </IconButton>
                 <Menu

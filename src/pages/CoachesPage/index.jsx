@@ -14,12 +14,19 @@ import {
   TextField,
   InputAdornment,
   Pagination,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Avatar,
 } from '@mui/material';
 import { Search, Star } from '@mui/icons-material';
 import { fetchAllCoaches } from '../../redux/slices/coach';
 import { fetchCategories } from '../../redux/slices/category';
 import styles from './CoachesPage.module.scss';
 import { API_URL } from '../../constants/api';
+import emptyAvatar from '../../assets/empty-avatar.png';
+import { iconMap } from '../../constants/mainPageData';
 
 const CoachesPage = () => {
   const dispatch = useDispatch();
@@ -43,7 +50,8 @@ const CoachesPage = () => {
 
     const matchesSpecialization =
       selectedSpecialization === 'all' ||
-      coach.specialization?.some((spec) => spec === selectedSpecialization);
+      (coach.specializations &&
+        coach.specializations.some((spec) => spec._id === selectedSpecialization));
 
     return matchesSearch && matchesSpecialization;
   });
@@ -120,18 +128,21 @@ const CoachesPage = () => {
       </Box>
 
       <Box className={styles.specializationContainer}>
-        <TextField
-          select
-          value={selectedSpecialization}
-          onChange={handleSpecializationChange}
-          className={styles.specializationField}>
-          <option value="all">Всі спеціалізації</option>
-          {categories?.map((category) => (
-            <option key={category._id} value={category._id}>
-              {category.name}
-            </option>
-          ))}
-        </TextField>
+        <FormControl fullWidth>
+          <InputLabel>Спеціалізація</InputLabel>
+          <Select
+            value={selectedSpecialization}
+            onChange={handleSpecializationChange}
+            label="Спеціалізація"
+            className={styles.specializationField}>
+            <MenuItem value="all">Всі спеціалізації</MenuItem>
+            {categories?.map((category) => (
+              <MenuItem key={category._id} value={category._id}>
+                {category.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
       </Box>
 
       {filteredCoaches.length === 0 ? (
@@ -150,17 +161,19 @@ const CoachesPage = () => {
                     component="img"
                     height="200"
                     image={
-                      coach.photos && coach.photos.length > 0
-                        ? `${API_URL}${coach.photos[0]}`
-                        : 'https://via.placeholder.com/300x200?text=Тренер'
+                      coach?.user?.avatar
+                        ? `${API_URL}uploads/avatars/${coach.user.avatar}`
+                        : emptyAvatar
                     }
-                    alt={coach.user.firstName}
+                    alt={`${coach.user.firstName} ${coach.user.lastName}`}
                     className={styles.coachImage}
                   />
                   <CardContent className={styles.coachContent}>
-                    <Typography variant="h6" component="div" className={styles.coachName}>
-                      {coach.user.firstName} {coach.user.lastName}
-                    </Typography>
+                    <Box className={styles.coachNameContainer}>
+                      <Typography variant="h6" component="div" className={styles.coachName}>
+                        {coach.user.firstName} {coach.user.lastName}
+                      </Typography>
+                    </Box>
 
                     <Box className={styles.ratingContainer}>
                       <Rating
@@ -178,17 +191,25 @@ const CoachesPage = () => {
                       </Typography>
                     </Box>
 
+                    <Box className={styles.infoContainer}>
+                      <Typography variant="body2" className={styles.infoItem}>
+                        <strong>Вік:</strong> {coach.age || 'Не вказано'}
+                      </Typography>
+                      <Typography variant="body2" className={styles.infoItem}>
+                        <strong>Досвід:</strong> {coach.experience || 'Не вказано'} років
+                      </Typography>
+                    </Box>
+
                     <Box className={styles.specializationContainer}>
-                      {coach?.specialization?.map((spec) => {
-                        const category = categories?.find((cat) => cat._id === spec);
+                      {coach.specializations?.map((spec) => {
+                        console.log('Specialization:', spec);
                         return (
-                          category && (
-                            <Chip
-                              key={spec}
-                              label={category.name}
-                              className={styles.specializationChip}
-                            />
-                          )
+                          <Chip
+                            key={spec._id}
+                            label={spec.name}
+                            className={styles.specializationChip}
+                            icon={iconMap[spec.iconName]}
+                          />
                         );
                       })}
                     </Box>
@@ -215,18 +236,14 @@ const CoachesPage = () => {
               </Grid>
             ))}
           </Grid>
-
-          {pageCount > 1 && (
-            <Box className={styles.paginationContainer}>
-              <Pagination
-                count={pageCount}
-                page={page}
-                onChange={handlePageChange}
-                color="primary"
-                size="large"
-              />
-            </Box>
-          )}
+          <Box className={styles.paginationContainer}>
+            <Pagination
+              count={pageCount}
+              page={page}
+              onChange={handlePageChange}
+              className={styles.pagination}
+            />
+          </Box>
         </>
       )}
     </div>

@@ -85,7 +85,7 @@ export const addReview = createAsyncThunk(
   async ({ id, reviewData }, { rejectWithValue, getState }) => {
     try {
       const { auth } = getState();
-      const response = await axios.post(`/api/coach/${id}/review`, reviewData, {
+      const response = await axios.post(`/api/coach/${id}/reviews`, reviewData, {
         headers: {
           Authorization: `Bearer ${auth.token}`,
         },
@@ -111,12 +111,56 @@ export const uploadCoachPhotos = createAsyncThunk('coach/uploadPhotos', async ({
   return data;
 });
 
-export const deleteCoachPhoto = createAsyncThunk('coach/deletePhoto', async ({ id, filename }) => {
-  const { data } = await axios.delete(`/api/coach/${id}/photos`, {
-    data: { filename },
-  });
-  return data;
-});
+export const deleteCoachPhoto = createAsyncThunk(
+  'coach/deleteCoachPhoto',
+  async ({ id, photoId }, { rejectWithValue, getState }) => {
+    try {
+      const { auth } = getState();
+      const response = await axios.delete(`/api/coach/${id}/photos/${photoId}`, {
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      });
+      return { id, photos: response.data.photos };
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  },
+);
+
+export const updateCoachReview = createAsyncThunk(
+  'coach/updateReview',
+  async ({ id, reviewId, reviewData }, { rejectWithValue, getState }) => {
+    try {
+      const { auth } = getState();
+      const response = await axios.put(`/api/coach/${id}/reviews/${reviewId}`, reviewData, {
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  },
+);
+
+export const deleteCoachReview = createAsyncThunk(
+  'coach/deleteReview',
+  async ({ id, reviewId }, { rejectWithValue, getState }) => {
+    try {
+      const { auth } = getState();
+      const response = await axios.delete(`/api/coach/${id}/reviews/${reviewId}`, {
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  },
+);
 
 // Початковий стан
 const initialState = {
@@ -189,7 +233,7 @@ const coachSlice = createSlice({
           state.coaches[index] = action.payload;
         }
         if (state.currentCoach && state.currentCoach._id === action.payload._id) {
-          state.currentCoach = action.payload;
+          state.currentCoach = { ...state.currentCoach, ...action.payload };
         }
       })
       .addCase(updateCoach.rejected, (state) => {
@@ -242,10 +286,43 @@ const coachSlice = createSlice({
         state.status = 'loading';
       })
       .addCase(deleteCoachPhoto.fulfilled, (state, action) => {
-        state.status = 'loaded';
-        state.currentCoach.photos = action.payload.photos;
+        const { id } = action.payload;
+        if (state.currentCoach && state.currentCoach._id === id) {
+          state.currentCoach.photos = state.currentCoach.photos.filter(
+            (photo) => photo !== action.payload.photoId,
+          );
+        }
+        state.status = 'succeeded';
       })
       .addCase(deleteCoachPhoto.rejected, (state) => {
+        state.status = 'error';
+      })
+
+      // Оновлення відгуку
+      .addCase(updateCoachReview.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(updateCoachReview.fulfilled, (state, action) => {
+        state.status = 'loaded';
+        if (state.currentCoach && state.currentCoach._id === action.payload._id) {
+          state.currentCoach = action.payload;
+        }
+      })
+      .addCase(updateCoachReview.rejected, (state) => {
+        state.status = 'error';
+      })
+
+      // Видалення відгуку
+      .addCase(deleteCoachReview.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(deleteCoachReview.fulfilled, (state, action) => {
+        state.status = 'loaded';
+        if (state.currentCoach && state.currentCoach._id === action.payload._id) {
+          state.currentCoach = action.payload;
+        }
+      })
+      .addCase(deleteCoachReview.rejected, (state) => {
         state.status = 'error';
       });
   },

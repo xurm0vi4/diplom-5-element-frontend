@@ -57,7 +57,7 @@ const CreateCoachForm = () => {
         email: data.email,
         password: data.password,
         age: data.age,
-        specialization: selectedSpecializations,
+        specializations: selectedSpecializations,
         experience: data.experience,
         description: data.description,
       };

@@ -11,11 +11,11 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Chip,
 } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { createTraining } from '../../redux/slices/trainings';
 import { fetchCategories } from '../../redux/slices/category';
-import { fetchAllCoaches } from '../../redux/slices/coach';
 import styles from './CreateTrainingForm.module.scss';
 
 const CreateTrainingForm = ({ isAdmin = false }) => {
@@ -26,14 +26,6 @@ const CreateTrainingForm = ({ isAdmin = false }) => {
   const [success, setSuccess] = useState('');
 
   const { categories } = useSelector((state) => state.category);
-  const { coaches } = useSelector((state) => state.coach);
-
-  useEffect(() => {
-    dispatch(fetchCategories());
-    if (isAdmin) {
-      dispatch(fetchAllCoaches());
-    }
-  }, [dispatch, isAdmin]);
 
   const {
     register,
@@ -41,6 +33,10 @@ const CreateTrainingForm = ({ isAdmin = false }) => {
     reset,
     formState: { errors },
   } = useForm();
+
+  useEffect(() => {
+    dispatch(fetchCategories());
+  }, [dispatch]);
 
   const onSubmit = async (data) => {
     try {
@@ -53,10 +49,10 @@ const CreateTrainingForm = ({ isAdmin = false }) => {
         description: data.description,
         category: data.category,
         coach: isAdmin ? data.coach : user._id,
-        price: data.price,
+        schedule: data.schedule || [],
         duration: data.duration,
-        maxParticipants: data.maxParticipants,
-        schedule: data.schedule,
+        capacity: data.capacity,
+        location: data.location,
       };
 
       await dispatch(createTraining(trainingData)).unwrap();
@@ -91,16 +87,55 @@ const CreateTrainingForm = ({ isAdmin = false }) => {
           helperText={errors.title?.message}
           className={styles.input}
         />
+      </Box>
+
+      <Box className={styles.formRow}>
+        <FormControl fullWidth className={styles.input}>
+          <InputLabel>Категорія</InputLabel>
+          <Select
+            {...register('category', { required: "Категорія обов'язкова" })}
+            error={!!errors.category}>
+            {categories?.map((category) => (
+              <MenuItem key={category._id} value={category._id}>
+                {category.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
+
+      <Box className={styles.formRow}>
         <TextField
           fullWidth
-          label="Ціна"
+          label="Опис"
+          multiline
+          rows={4}
+          {...register('description', { required: "Опис обов'язковий" })}
+          error={!!errors.description}
+          helperText={errors.description?.message}
+          className={styles.textarea}
+        />
+      </Box>
+
+      <Box className={styles.formRow}>
+        <TextField
+          fullWidth
+          label="Місце проведення"
+          {...register('location', { required: "Місце проведення обов'язкове" })}
+          error={!!errors.location}
+          helperText={errors.location?.message}
+          className={styles.input}
+        />
+        <TextField
+          fullWidth
+          label="Місткість"
           type="number"
-          {...register('price', {
-            required: "Ціна обов'язкова",
-            min: { value: 0, message: "Ціна не може бути від'ємною" },
+          {...register('capacity', {
+            required: "Місткість обов'язкова",
+            min: { value: 1, message: 'Місткість повинна бути більше 0' },
           })}
-          error={!!errors.price}
-          helperText={errors.price?.message}
+          error={!!errors.capacity}
+          helperText={errors.capacity?.message}
           className={styles.input}
         />
       </Box>
@@ -118,59 +153,7 @@ const CreateTrainingForm = ({ isAdmin = false }) => {
           helperText={errors.duration?.message}
           className={styles.input}
         />
-        <TextField
-          fullWidth
-          label="Максимальна кількість учасників"
-          type="number"
-          {...register('maxParticipants', {
-            required: "Кількість учасників обов'язкова",
-            min: { value: 1, message: 'Кількість учасників повинна бути більше 0' },
-          })}
-          error={!!errors.maxParticipants}
-          helperText={errors.maxParticipants?.message}
-          className={styles.input}
-        />
       </Box>
-
-      <Box className={styles.formRow}>
-        <FormControl fullWidth className={styles.input}>
-          <InputLabel>Категорія</InputLabel>
-          <Select
-            {...register('category', { required: "Категорія обов'язкова" })}
-            error={!!errors.category}>
-            {categories?.map((category) => (
-              <MenuItem key={category._id} value={category._id}>
-                {category.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        {isAdmin && (
-          <FormControl fullWidth className={styles.input}>
-            <InputLabel>Тренер</InputLabel>
-            <Select
-              {...register('coach', { required: "Тренер обов'язковий" })}
-              error={!!errors.coach}>
-              {coaches?.map((coach) => (
-                <MenuItem key={coach._id} value={coach._id}>
-                  {coach.user.firstName} {coach.user.lastName}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        )}
-      </Box>
-
-      <TextField
-        fullWidth
-        label="Опис"
-        multiline
-        rows={4}
-        {...register('description', { required: "Опис обов'язковий" })}
-        error={!!errors.description}
-        helperText={errors.description?.message}
-        className={styles.textarea}
-      />
 
       <Box className={styles.formActions}>
         <Button

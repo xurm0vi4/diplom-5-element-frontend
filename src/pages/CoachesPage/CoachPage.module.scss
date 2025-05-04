@@ -57,6 +57,14 @@
 .specializationChip {
   font-size: 1rem;
   padding: 0.5rem 1rem;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  background-color: #e3f2fd;
+  color: #1976d2;
+
+  .MuiChip-icon {
+    margin-left: 8px;
+  }
 }
 
 .description {
@@ -347,5 +355,50 @@
     display: flex;
     gap: 16px;
     justify-content: flex-end;
+  }
+}
+
+.reviewUser {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.reviewActions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.reviewButtons {
+  display: flex;
+  gap: 8px;
+}
+
+.editButton {
+  color: #1976d2;
+}
+
+.deleteButton {
+  color: #d32f2f;
+}
+
+.reviewRating {
+  color: #ffb400;
+}
+
+.specializationIcon {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+}
+
+.infoItem {
+  margin-bottom: 8px;
+  color: #666;
+
+  strong {
+    color: #333;
+    margin-right: 8px;
   }
 }

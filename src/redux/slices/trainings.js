@@ -7,9 +7,13 @@ import axios from '../../axios';
 // Асинхронні thunks для взаємодії з API
 export const fetchAllTrainings = createAsyncThunk(
   'trainings/fetchAllTrainings',
-  async (_, { rejectWithValue }) => {
+  async ({ category, coach } = {}, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`/api/training`);
+      const params = new URLSearchParams();
+      if (category && category !== 'all') params.append('category', category);
+      if (coach && coach !== 'all') params.append('coach', coach);
+
+      const response = await axios.get(`/api/training?${params.toString()}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -19,9 +23,33 @@ export const fetchAllTrainings = createAsyncThunk(
 
 export const fetchTrainingById = createAsyncThunk(
   'trainings/fetchTrainingById',
-  async (id, { rejectWithValue }) => {
+  async (id, { rejectWithValue, getState }) => {
     try {
-      const response = await axios.get(`/api/training/${id}`);
+      const { auth } = getState();
+      const response = await axios.get(`/api/training/${id}`, {
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      });
+      console.log('Training response:', response.data);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  },
+);
+
+export const fetchTrainings = createAsyncThunk(
+  'trainings/fetchTrainings',
+  async (_, { rejectWithValue, getState }) => {
+    try {
+      const { auth } = getState();
+      const response = await axios.get('/api/training', {
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      });
+      console.log('Trainings response:', response.data);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -150,13 +178,63 @@ export const deleteTrainingPhoto = createAsyncThunk(
   async ({ id, photoId }, { rejectWithValue, getState }) => {
     try {
       const { auth } = getState();
-      const response = await axios.delete(`/api/training/${id}/photos`, {
+      const response = await axios.delete(`/api/training/${id}/photos/${photoId}`, {
         headers: {
           Authorization: `Bearer ${auth.token}`,
         },
-        data: { photoId },
       });
-      return { id, photoId, ...response.data };
+      return { id, photos: response.data.photos };
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  },
+);
+
+export const addTrainingReview = createAsyncThunk(
+  'trainings/addReview',
+  async ({ id, reviewData }, { rejectWithValue, getState }) => {
+    try {
+      const { auth } = getState();
+      const response = await axios.post(`/api/training/${id}/reviews`, reviewData, {
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  },
+);
+
+export const updateTrainingReview = createAsyncThunk(
+  'trainings/updateReview',
+  async ({ id, reviewId, reviewData }, { rejectWithValue, getState }) => {
+    try {
+      const { auth } = getState();
+      const response = await axios.put(`/api/training/${id}/reviews/${reviewId}`, reviewData, {
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  },
+);
+
+export const deleteTrainingReview = createAsyncThunk(
+  'trainings/deleteReview',
+  async ({ id, reviewId }, { rejectWithValue, getState }) => {
+    try {
+      const { auth } = getState();
+      const response = await axios.delete(`/api/training/${id}/reviews/${reviewId}`, {
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      });
+      return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
     }
@@ -321,6 +399,48 @@ const trainingsSlice = createSlice({
       .addCase(deleteTrainingPhoto.rejected, (state, action) => {
         state.status = 'error';
         state.error = action.payload?.message || 'Помилка при видаленні фото';
+      })
+
+      // Додавання відгуку
+      .addCase(addTrainingReview.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(addTrainingReview.fulfilled, (state, action) => {
+        state.status = 'loaded';
+        if (state.currentTraining && state.currentTraining._id === action.payload._id) {
+          state.currentTraining = action.payload;
+        }
+      })
+      .addCase(addTrainingReview.rejected, (state) => {
+        state.status = 'error';
+      })
+
+      // Оновлення відгуку
+      .addCase(updateTrainingReview.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(updateTrainingReview.fulfilled, (state, action) => {
+        state.status = 'loaded';
+        if (state.currentTraining && state.currentTraining._id === action.payload._id) {
+          state.currentTraining = action.payload;
+        }
+      })
+      .addCase(updateTrainingReview.rejected, (state) => {
+        state.status = 'error';
+      })
+
+      // Видалення відгуку
+      .addCase(deleteTrainingReview.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(deleteTrainingReview.fulfilled, (state, action) => {
+        state.status = 'loaded';
+        if (state.currentTraining && state.currentTraining._id === action.payload._id) {
+          state.currentTraining = action.payload;
+        }
+      })
+      .addCase(deleteTrainingReview.rejected, (state) => {
+        state.status = 'error';
       });
   },
 });

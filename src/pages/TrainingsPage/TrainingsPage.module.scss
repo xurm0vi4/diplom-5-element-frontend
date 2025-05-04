@@ -40,18 +40,18 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
-  
+  transition: transform 0.2s ease-in-out;
+
   &:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
   }
 }
 
 .trainingImage {
   object-fit: cover;
   height: 200px;
+  width: 100%;
 }
 
 .trainingContent {
@@ -61,23 +61,22 @@
 }
 
 .trainingTitle {
-  margin-bottom: 0.5rem;
+  margin-bottom: 16px;
   font-weight: 600;
   color: #333;
 }
 
 .trainingInfo {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .infoItem {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  color: #666;
+  gap: 8px;
+  color: rgba(0, 0, 0, 0.6);
 }
 
 .categoryContainer {
@@ -167,34 +166,52 @@
   margin-top: 1rem !important;
 }
 
+.coachContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.coachAvatar {
+  width: 32px;
+  height: 32px;
+  border: 2px solid #1976d2;
+}
+
+.coachName {
+  color: #666;
+  font-size: 0.875rem;
+}
+
 @media (max-width: 600px) {
   .trainingsPage {
     padding: 1rem;
   }
-  
+
   .header {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
   }
-  
+
   .createButton {
     width: 100%;
   }
-  
+
   .filtersSection {
     padding: 1rem;
   }
-  
+
   .trainingImage {
     height: 180px;
   }
-  
+
   .trainingInfo {
     flex-direction: column;
     gap: 0.5rem;
   }
-  
+
   .noResultsSection {
     padding: 2rem 1rem;
   }

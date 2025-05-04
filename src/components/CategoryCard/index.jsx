@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, Box, Typography } from '@mui/material';
+import { iconMap } from '../../constants/mainPageData';
 import styles from './CategoryCard.module.scss';
 
 export const CategoryCard = ({ id, name, description, iconName }) => {
@@ -13,9 +14,7 @@ export const CategoryCard = ({ id, name, description, iconName }) => {
   return (
     <Card className={styles.card} onClick={handleClick}>
       <CardContent className={styles.content}>
-        <Box className={styles.icon}>
-          <i className={`fas fa-${iconName}`}></i>
-        </Box>
+        <Box className={styles.icon}>{iconMap[iconName]}</Box>
         <Typography variant="h5" component="h3" className={styles.title}>
           {name}
         </Typography>

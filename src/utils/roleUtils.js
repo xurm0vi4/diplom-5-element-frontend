@@ -15,10 +15,10 @@ export const isUser = (user) => checkUserRole(user) === ROLES.USER;
 
 export const canEditTraining = (user, training) => {
   if (!user || !training) return false;
-  return isAdmin(user) || (isCoach(user) && training.coachId === user._id);
+  return isAdmin(user) || (isCoach(user) && training.coachId === user?.coach?._id);
 };
 
 export const canEditCoach = (user, coach) => {
   if (!user || !coach) return false;
-  return isAdmin(user) || (isCoach(user) && coach.userId === user._id);
+  return isAdmin(user) || (isCoach(user) && coach.userId === user?.coach?._id);
 };

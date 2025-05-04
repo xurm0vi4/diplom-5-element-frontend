@@ -229,9 +229,9 @@ const MainPage = () => {
 
         <Grid container spacing={3} className={styles.categoriesGrid}>
           {categories.map((category) => (
-            <Grid item xs={12} sm={6} md={4} key={category.id}>
+            <Grid item xs={12} sm={6} md={4} key={category._id}>
               <CategoryCard
-                id={category.id}
+                id={category._id}
                 name={category.name}
                 description={category.description}
                 iconName={category.iconName}
