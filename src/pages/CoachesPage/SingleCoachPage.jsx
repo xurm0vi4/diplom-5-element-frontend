@@ -760,7 +760,8 @@ const CoachPage = () => {
           color="error"
           startIcon={<Delete />}
           onClick={() => setIsDeleteDialogOpen(true)}
-          className={styles.deleteButton}>
+          className={styles.deleteButton}
+          style={{ marginTop: 20 }}>
           Видалити тренера
         </Button>
       )}

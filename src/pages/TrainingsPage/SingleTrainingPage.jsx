@@ -670,12 +670,16 @@ const TrainingPage = () => {
         </DialogTitle>
         <DialogContent className={styles.photoDialogContent}>
           {selectedPhoto && (
-            <img src={selectedPhoto.url} alt="Фото тренування" className={styles.photoPreview} />
+            <img
+              src={`${API_URL}uploads/trainings/${selectedPhoto}`}
+              alt="Фото тренування"
+              className={styles.photoPreview}
+            />
           )}
         </DialogContent>
         <DialogActions className={styles.photoDialogActions}>
           {canEdit && (
-            <Button color="error" onClick={() => handleDeletePhoto(selectedPhoto?.filename)}>
+            <Button color="error" onClick={() => handleDeletePhoto(selectedPhoto)}>
               Видалити
             </Button>
           )}
