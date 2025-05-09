@@ -48,7 +48,7 @@ import {
 } from '../../redux/slices/coach';
 import { canEditCoach, isAdmin } from '../../utils/roleUtils';
 import { fetchCategories } from '../../redux/slices/category';
-import styles from './CoachPage.module.scss';
+import styles from './SingleCoachPage.module.scss';
 import { API_URL } from '../../constants/api';
 import emptyAvatar from '../../assets/empty-avatar.png';
 import { iconMap } from '../../constants/mainPageData';

@@ -50,7 +50,7 @@ import {
 } from '../../redux/slices/trainings';
 import { fetchCategories } from '../../redux/slices/category';
 import { canEditTraining, isAdmin } from '../../utils/roleUtils';
-import styles from './TrainingPage.module.scss';
+import styles from './SingleTrainingPage.module.scss';
 import { API_URL } from '../../constants/api';
 import { useForm } from 'react-hook-form';
 

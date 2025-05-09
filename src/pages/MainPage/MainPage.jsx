@@ -28,7 +28,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { fetchCategories } from '../../redux/slices/category';
-import { CategoryCard } from '../../components/CategoryCard';
+import { CategoryCard } from '../../components/CategoryCard/CategoryCard';
 
 const MainPage = () => {
   const navigate = useNavigate();
