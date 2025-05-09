@@ -12,25 +12,14 @@ const Footer = () => {
         <Grid container spacing={4}>
           <Grid item xs={12} md={4}>
             <Typography variant="h6" className={styles.footerTitle}>
-              Про нас
-            </Typography>
-            <Typography className={styles.footerText}>
-              Наш спортивний клуб - це сучасний комплекс, який пропонує широкий вибір тренувань для
-              всіх вікових груп. Ми прагнемо створити комфортне середовище для вашого фізичного
-              розвитку та здорового способу життя.
-            </Typography>
-          </Grid>
-
-          <Grid item xs={12} md={4}>
-            <Typography variant="h6" className={styles.footerTitle}>
               Контакти
             </Typography>
             <Typography className={styles.footerText}>
-              Адреса: вул. Спортивна, 123, м. Київ
+              Адреса: вул. Електриків, 29а, м. Київ
               <br />
-              Телефон: +380 (44) 123-45-67
+              Телефон: +380 (44) 495-95-55
               <br />
-              Email: info@sportclub.com
+              Email: info@5element.ua
             </Typography>
             <Box className={styles.socialLinks}>
               <IconButton className={styles.iconButton}>
@@ -61,16 +50,8 @@ const Footer = () => {
 
         <Box className={styles.footerBottom}>
           <Typography className={styles.copyright}>
-            © {currentYear} Спортивний клуб. Всі права захищені.
+            © {currentYear} Елітний сімейний фітнес-центр "5 елемент". Всі права захищені.
           </Typography>
-          <Box className={styles.footerLinks}>
-            <Typography component="a" href="/privacy" className={styles.footerLink}>
-              Політика конфіденційності
-            </Typography>
-            <Typography component="a" href="/terms" className={styles.footerLink}>
-              Умови використання
-            </Typography>
-          </Box>
         </Box>
       </Container>
     </footer>

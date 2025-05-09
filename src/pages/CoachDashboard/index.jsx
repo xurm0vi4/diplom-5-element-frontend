@@ -27,7 +27,7 @@ import {
 } from '@mui/material';
 import { Edit as EditIcon, PhotoCamera, Close } from '@mui/icons-material';
 import { updateCoach } from '../../redux/slices/coach';
-import { fetchTrainings } from '../../redux/slices/trainings';
+import { fetchAllTrainings } from '../../redux/slices/trainings';
 import { fetchCategories } from '../../redux/slices/category';
 import { fetchCurrentCoach, clearCurrentCoach } from '../../redux/slices/currentCoach';
 import { uploadAvatar } from '../../redux/slices/auth';
@@ -43,9 +43,7 @@ const CoachDashboard = () => {
   const { data: currentCoach, status: currentCoachStatus } = useSelector(
     (state) => state.currentCoach,
   );
-  // console.log(currentCoach);
   const { trainings } = useSelector((state) => state.training);
-  console.log(trainings);
   const { categories } = useSelector((state) => state.category);
   const [activeTab, setActiveTab] = useState(0);
   const [isEditing, setIsEditing] = useState(false);
@@ -65,13 +63,18 @@ const CoachDashboard = () => {
   useEffect(() => {
     if (user?._id && user?.role === 'coach') {
       dispatch(fetchCurrentCoach(user._id));
-      dispatch(fetchTrainings());
       dispatch(fetchCategories());
     }
     return () => {
       dispatch(clearCurrentCoach());
     };
   }, [dispatch, user]);
+
+  useEffect(() => {
+    if (currentCoach?._id) {
+      dispatch(fetchAllTrainings({ coach: currentCoach._id }));
+    }
+  }, [dispatch, currentCoach]);
 
   useEffect(() => {
     if (currentCoach) {
@@ -262,7 +265,7 @@ const CoachDashboard = () => {
                 {currentCoach?.user?.firstName} {currentCoach?.user?.lastName}
               </Typography>
               <Link
-                href={`/coaches/${currentCoach?._id}`}
+                onClick={() => navigate(`/coaches/${currentCoach?._id}`)}
                 variant="body1"
                 className={styles.profileLink}>
                 Перейти на мою сторінку
@@ -373,25 +376,23 @@ const CoachDashboard = () => {
               <CreateTrainingForm isAdmin={false} />
             ) : (
               <Grid container spacing={3}>
-                {trainings
-                  ?.filter((training) => training.coach?._id === currentCoach?._id)
-                  .map((training) => (
-                    <Grid item xs={12} sm={6} md={4} key={training._id}>
-                      <Card
-                        className={styles.trainingCard}
-                        onClick={() => handleTrainingClick(training._id)}>
-                        <CardContent>
-                          <Typography variant="h6">{training.title}</Typography>
-                          <Typography variant="body2">{training.description}</Typography>
-                          <Chip
-                            label={training.category?.name}
-                            className={styles.chip}
-                            icon={iconMap[training.category?.iconName]}
-                          />
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                  ))}
+                {trainings?.map((training) => (
+                  <Grid item xs={12} sm={6} md={4} key={training._id}>
+                    <Card
+                      className={styles.trainingCard}
+                      onClick={() => handleTrainingClick(training._id)}>
+                      <CardContent>
+                        <Typography variant="h6">{training.title}</Typography>
+                        <Typography variant="body2">{training.description}</Typography>
+                        <Chip
+                          label={training.category?.name}
+                          className={styles.chip}
+                          icon={iconMap[training.category?.iconName]}
+                        />
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))}
               </Grid>
             )}
           </>

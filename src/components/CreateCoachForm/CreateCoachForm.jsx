@@ -4,7 +4,6 @@ import {
   Box,
   TextField,
   Button,
-  Grid,
   Alert,
   CircularProgress,
   FormControl,
@@ -14,7 +13,7 @@ import {
   Chip,
 } from '@mui/material';
 import { useForm } from 'react-hook-form';
-import { createCoach } from '../../redux/slices/coach';
+import { createCoach, fetchAllCoaches } from '../../redux/slices/coach';
 import { fetchCategories } from '../../redux/slices/category';
 import styles from './CreateCoachForm.module.scss';
 
@@ -63,6 +62,7 @@ const CreateCoachForm = () => {
       };
 
       await dispatch(createCoach(coachData)).unwrap();
+      await dispatch(fetchAllCoaches());
       setSuccess('Тренера успішно створено!');
       reset();
       setSelectedSpecializations([]);

@@ -85,9 +85,6 @@ const Header = () => {
               <Button color="inherit" onClick={() => navigate('/about')}>
                 Про нас
               </Button>
-              <Button color="inherit" onClick={() => navigate('/contacts')}>
-                Контакти
-              </Button>
             </Box>
           )}
 
@@ -178,13 +175,6 @@ const Header = () => {
               handleMenuClose();
             }}>
             Про нас
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
-              navigate('/contacts');
-              handleMenuClose();
-            }}>
-            Контакти
           </MenuItem>
           {isAuthenticated && (
             <>

@@ -1,10 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from '../../axios';
 
-// Базовий URL для API
-// const API_URL = 'http://localhost:5000/api/coach';
-
-// Асинхронні thunks для взаємодії з API
 export const fetchAllCoaches = createAsyncThunk(
   'coach/fetchAllCoaches',
   async (_, { rejectWithValue }) => {
@@ -162,14 +158,12 @@ export const deleteCoachReview = createAsyncThunk(
   },
 );
 
-// Початковий стан
 const initialState = {
   coaches: [],
   currentCoach: null,
   status: 'loading',
 };
 
-// Створення slice
 const coachSlice = createSlice({
   name: 'coach',
   initialState,
@@ -186,7 +180,6 @@ const coachSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Отримання всіх тренерів
       .addCase(fetchAllCoaches.pending, (state) => {
         state.status = 'loading';
       })
@@ -198,7 +191,6 @@ const coachSlice = createSlice({
         state.status = 'error';
       })
 
-      // Отримання тренера за ID
       .addCase(fetchCoachById.pending, (state) => {
         state.status = 'loading';
       })
@@ -210,7 +202,6 @@ const coachSlice = createSlice({
         state.status = 'error';
       })
 
-      // Створення тренера
       .addCase(createCoach.pending, (state) => {
         state.status = 'loading';
       })
@@ -222,7 +213,6 @@ const coachSlice = createSlice({
         state.status = 'error';
       })
 
-      // Оновлення тренера
       .addCase(updateCoach.pending, (state) => {
         state.status = 'loading';
       })
@@ -240,7 +230,6 @@ const coachSlice = createSlice({
         state.status = 'error';
       })
 
-      // Видалення тренера
       .addCase(deleteCoach.pending, (state) => {
         state.status = 'loading';
       })
@@ -255,7 +244,6 @@ const coachSlice = createSlice({
         state.status = 'error';
       })
 
-      // Додавання відгуку
       .addCase(addReview.pending, (state) => {
         state.status = 'loading';
       })
@@ -269,7 +257,6 @@ const coachSlice = createSlice({
         state.status = 'error';
       })
 
-      // Завантаження фото
       .addCase(uploadCoachPhotos.pending, (state) => {
         state.status = 'loading';
       })
@@ -281,7 +268,6 @@ const coachSlice = createSlice({
         state.status = 'error';
       })
 
-      // Видалення фото
       .addCase(deleteCoachPhoto.pending, (state) => {
         state.status = 'loading';
       })
@@ -298,7 +284,6 @@ const coachSlice = createSlice({
         state.status = 'error';
       })
 
-      // Оновлення відгуку
       .addCase(updateCoachReview.pending, (state) => {
         state.status = 'loading';
       })
@@ -312,7 +297,6 @@ const coachSlice = createSlice({
         state.status = 'error';
       })
 
-      // Видалення відгуку
       .addCase(deleteCoachReview.pending, (state) => {
         state.status = 'loading';
       })

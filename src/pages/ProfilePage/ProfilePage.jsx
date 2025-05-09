@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useForm } from 'react-hook-form';
 import {
   Box,
   Typography,
@@ -28,25 +29,25 @@ const ProfilePage = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.data);
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({
-    firstName: user?.firstName || '',
-    lastName: user?.lastName || '',
-    email: user?.email || '',
-  });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    defaultValues: {
+      firstName: user?.firstName || '',
+      lastName: user?.lastName || '',
+      email: user?.email || '',
+    },
+  });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const onSubmit = async (data) => {
     try {
-      await dispatch(updateUser(formData)).unwrap();
+      await dispatch(updateUser(data)).unwrap();
       setSuccess('Профіль успішно оновлено');
       setIsEditing(false);
       setTimeout(() => setSuccess(''), 3000);
@@ -79,6 +80,15 @@ const ProfilePage = () => {
       setError(err.message || 'Помилка при видаленні аватара');
       setTimeout(() => setError(''), 3000);
     }
+  };
+
+  const handleEditClick = () => {
+    setIsEditing(true);
+    reset({
+      firstName: user?.firstName || '',
+      lastName: user?.lastName || '',
+      email: user?.email || '',
+    });
   };
 
   if (!user) {
@@ -139,37 +149,40 @@ const ProfilePage = () => {
         )}
 
         {isEditing ? (
-          <Box component="form" onSubmit={handleSubmit} className={styles.form}>
+          <Box component="form" onSubmit={handleSubmit(onSubmit)} className={styles.form}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
                   label="Ім'я"
-                  name="firstName"
-                  value={formData.firstName}
-                  onChange={handleChange}
-                  required
+                  {...register('firstName', { required: "Ім'я обов'язкове" })}
+                  error={!!errors.firstName}
+                  helperText={errors.firstName?.message}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
                   label="Прізвище"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleChange}
-                  required
+                  {...register('lastName', { required: "Прізвище обов'язкове" })}
+                  error={!!errors.lastName}
+                  helperText={errors.lastName?.message}
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
                   fullWidth
                   label="Email"
-                  name="email"
                   type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
+                  {...register('email', {
+                    required: "Email обов'язковий",
+                    pattern: {
+                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                      message: 'Невірний формат email',
+                    },
+                  })}
+                  error={!!errors.email}
+                  helperText={errors.email?.message}
                 />
               </Grid>
             </Grid>
@@ -223,10 +236,7 @@ const ProfilePage = () => {
             </Box>
 
             <Box className={styles.actions}>
-              <Button
-                variant="contained"
-                startIcon={<EditIcon />}
-                onClick={() => setIsEditing(true)}>
+              <Button variant="contained" startIcon={<EditIcon />} onClick={handleEditClick}>
                 Редагувати профіль
               </Button>
             </Box>

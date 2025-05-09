@@ -15,7 +15,6 @@ import {
   CircularProgress,
   TextField,
   Card,
-  CardContent,
   CardMedia,
   IconButton,
   Dialog,
@@ -60,16 +59,14 @@ const CoachPage = () => {
   const dispatch = useDispatch();
   const { data: user } = useSelector((state) => state.auth);
   const { currentCoach: coach, status } = useSelector((state) => state.coach);
-  console.log(coach);
   const { categories } = useSelector((state) => state.category);
-  console.log(coach);
 
   const [isEditing, setIsEditing] = useState(false);
   const [reviewError, setReviewError] = useState('');
   const [reviewSuccess, setReviewSuccess] = useState('');
   const [photoDialogOpen, setPhotoDialogOpen] = useState(false);
   const [photoPreview, setPhotoPreview] = useState(null);
-  const [photoDialogMode, setPhotoDialogMode] = useState('view'); // 'view' or 'delete'
+  const [photoDialogMode, setPhotoDialogMode] = useState('view');
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [formError, setFormError] = useState('');
 
@@ -137,14 +134,8 @@ const CoachPage = () => {
           lastName: editForm.lastName,
         },
       };
-      console.log('Дані для оновлення:', coachData);
-      const result = await dispatch(updateCoach({ id, coachData })).unwrap();
-      console.log('Результат оновлення:', result);
-
-      if (result) {
-        dispatch(fetchCoachById(id));
-      }
-
+      await dispatch(updateCoach({ id, coachData })).unwrap();
+      dispatch(fetchCoachById(id));
       setIsEditing(false);
     } catch (error) {
       console.error('Помилка при оновленні:', error);
@@ -174,7 +165,6 @@ const CoachPage = () => {
   };
 
   const handlePhotoClick = (photo, mode = 'view') => {
-    console.log(photo);
     setPhotoPreview(photo);
     setPhotoDialogMode(mode);
     setPhotoDialogOpen(true);
@@ -195,7 +185,6 @@ const CoachPage = () => {
 
   const handlePhotoDelete = async (photo) => {
     try {
-      console.log('Photo object:', photo);
       await dispatch(deleteCoachPhoto({ id, photoId: photo })).unwrap();
       setPhotoDialogOpen(false);
       await dispatch(fetchCoachById(id)).unwrap();
@@ -264,6 +253,10 @@ const CoachPage = () => {
     }
   };
 
+  const handleSpecializationChange = (e) => {
+    setEditForm({ ...editForm, specializations: e.target.value });
+  };
+
   if (status === 'loading') {
     return (
       <Box className={styles.loadingContainer}>
@@ -317,8 +310,8 @@ const CoachPage = () => {
       </Button>
 
       <Paper className={styles.coachHeader}>
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={4} className={styles.avatarContainer}>
+        <div className={styles.headerContent}>
+          <div className={styles.avatarContainer}>
             <Avatar
               src={
                 coach?.user?.avatar ? `${API_URL}uploads/avatars/${coach.user.avatar}` : emptyAvatar
@@ -337,8 +330,8 @@ const CoachPage = () => {
                 Редагувати профіль
               </Button>
             )}
-          </Grid>
-          <Grid item xs={12} md={8} className={styles.infoContainer}>
+          </div>
+          <div className={styles.infoContainer}>
             {formError && (
               <Alert severity="error" className={styles.alert}>
                 {formError}
@@ -389,10 +382,7 @@ const CoachPage = () => {
                     <Select
                       multiple
                       value={editForm.specializations}
-                      onChange={(e) => {
-                        console.log('Вибрані спеціалізації:', e.target.value);
-                        setEditForm({ ...editForm, specializations: e.target.value });
-                      }}
+                      onChange={handleSpecializationChange}
                       renderValue={(selected) => (
                         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                           {selected.map((value) => (
@@ -489,8 +479,8 @@ const CoachPage = () => {
                 </Typography>
               </>
             )}
-          </Grid>
-        </Grid>
+          </div>
+        </div>
       </Paper>
 
       <Paper className={styles.photosSection}>
@@ -510,11 +500,10 @@ const CoachPage = () => {
             </Button>
           )}
         </Box>
-
         {coach.photos && coach.photos.length > 0 ? (
-          <Grid container spacing={2} className={styles.photosGrid}>
+          <div className={styles.photosGrid}>
             {coach.photos.map((photo) => (
-              <Grid item xs={6} sm={4} md={3} key={photo}>
+              <div key={photo} className={styles.photoCard}>
                 <Card className={styles.photoCard}>
                   <CardMedia
                     component="img"
@@ -532,9 +521,9 @@ const CoachPage = () => {
                     </IconButton>
                   )}
                 </Card>
-              </Grid>
+              </div>
             ))}
-          </Grid>
+          </div>
         ) : (
           <Typography variant="body1" className={styles.noPhotosText}>
             Фотографій поки немає
@@ -674,7 +663,6 @@ const CoachPage = () => {
         )}
       </Paper>
 
-      {/* Діалог редагування відгуку */}
       <Dialog open={editReviewDialog} onClose={() => setEditReviewDialog(false)}>
         <DialogTitle>Редагувати відгук</DialogTitle>
         <DialogContent>
@@ -712,7 +700,6 @@ const CoachPage = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Діалог видалення відгуку */}
       <Dialog open={deleteReviewDialog} onClose={() => setDeleteReviewDialog(false)}>
         <DialogTitle>Видалити відгук</DialogTitle>
         <DialogContent>
@@ -726,7 +713,6 @@ const CoachPage = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Діалог для перегляду/видалення фото */}
       <Dialog
         open={photoDialogOpen}
         onClose={closePhotoDialog}

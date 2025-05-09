@@ -4,23 +4,23 @@ import {
   Box,
   TextField,
   Button,
-  Grid,
   Alert,
   CircularProgress,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
-  Chip,
 } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { createTraining } from '../../redux/slices/trainings';
 import { fetchCategories } from '../../redux/slices/category';
+import { fetchAllCoaches } from '../../redux/slices/coach';
 import styles from './CreateTrainingForm.module.scss';
 
 const CreateTrainingForm = ({ isAdmin = false }) => {
   const dispatch = useDispatch();
-  const { data: user } = useSelector((state) => state.auth);
+  const { data: currentCoach } = useSelector((state) => state.currentCoach);
+  const { coaches } = useSelector((state) => state.coach);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -36,7 +36,10 @@ const CreateTrainingForm = ({ isAdmin = false }) => {
 
   useEffect(() => {
     dispatch(fetchCategories());
-  }, [dispatch]);
+    if (isAdmin) {
+      dispatch(fetchAllCoaches());
+    }
+  }, [dispatch, isAdmin]);
 
   const onSubmit = async (data) => {
     try {
@@ -48,7 +51,7 @@ const CreateTrainingForm = ({ isAdmin = false }) => {
         title: data.title,
         description: data.description,
         category: data.category,
-        coach: isAdmin ? data.coach : user._id,
+        coach: isAdmin ? data.coach : currentCoach._id,
         schedule: data.schedule || [],
         duration: data.duration,
         capacity: data.capacity,
@@ -89,6 +92,23 @@ const CreateTrainingForm = ({ isAdmin = false }) => {
         />
       </Box>
 
+      {isAdmin && (
+        <Box className={styles.formRow}>
+          <FormControl fullWidth className={styles.input}>
+            <InputLabel>Тренер</InputLabel>
+            <Select
+              {...register('coach', { required: "Тренер обов'язковий" })}
+              error={!!errors.coach}>
+              {coaches?.map((coach) => (
+                <MenuItem key={coach._id} value={coach._id}>
+                  {`${coach.user.firstName} ${coach.user.lastName}`}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+      )}
+
       <Box className={styles.formRow}>
         <FormControl fullWidth className={styles.input}>
           <InputLabel>Категорія</InputLabel>
@@ -117,7 +137,7 @@ const CreateTrainingForm = ({ isAdmin = false }) => {
         />
       </Box>
 
-      <Box className={styles.formRow}>
+      <Box className={styles.formRow} sx={{ display: 'flex', gap: 2 }}>
         <TextField
           fullWidth
           label="Місце проведення"

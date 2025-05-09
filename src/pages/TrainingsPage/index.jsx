@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -20,7 +20,6 @@ import {
   Select,
   MenuItem,
   Pagination,
-  Alert,
   Avatar,
 } from '@mui/material';
 import {
@@ -45,7 +44,6 @@ const TrainingsPage = () => {
   const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
   const { trainings, status } = useSelector((state) => state.training);
-  console.log('Trainings:', trainings);
   const { categories = [], status: categoriesStatus } = useSelector((state) => state.category);
   const { coaches = [], status: coachesStatus } = useSelector((state) => state.coach);
   const { data } = useSelector((state) => state.auth);
@@ -59,15 +57,12 @@ const TrainingsPage = () => {
   const canCreateTraining = isAdmin(data) || isCoach(data);
 
   useEffect(() => {
-    // Отримуємо параметри з URL
     const category = searchParams.get('category');
     const coach = searchParams.get('coach');
 
-    // Оновлюємо локальний стан
     if (category) setFilterCategory(category);
     if (coach) setFilterCoach(coach);
 
-    // Завантажуємо тренування з фільтрами
     dispatch(fetchAllTrainings({ category, coach }));
     dispatch(fetchCategories());
     dispatch(fetchAllCoaches());
@@ -134,7 +129,6 @@ const TrainingsPage = () => {
     );
   }
 
-  // Фільтрація тренувань
   const filteredTrainings =
     trainings?.filter((training) => {
       const matchesSearch = training.title.toLowerCase().includes(searchQuery.toLowerCase());
@@ -144,7 +138,6 @@ const TrainingsPage = () => {
       return matchesSearch && matchesCategory && matchesCoach;
     }) || [];
 
-  // Пагінація
   const indexOfLastItem = page * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentTrainings = filteredTrainings.slice(indexOfFirstItem, indexOfLastItem);
@@ -258,9 +251,9 @@ const TrainingsPage = () => {
         </Paper>
       ) : (
         <>
-          <Grid container spacing={3} className={styles.trainingsGrid}>
+          <Box className={styles.trainingsGrid}>
             {currentTrainings.map((training) => (
-              <Grid item xs={12} sm={6} md={4} key={training._id}>
+              <Box key={training._id} className={styles.trainingCardWrapper}>
                 <Card
                   className={styles.trainingCard}
                   onClick={() => handleTrainingClick(training._id)}>
@@ -335,9 +328,9 @@ const TrainingsPage = () => {
                     </Button>
                   </CardActions>
                 </Card>
-              </Grid>
+              </Box>
             ))}
-          </Grid>
+          </Box>
 
           {totalPages > 1 && (
             <Box className={styles.paginationContainer}>

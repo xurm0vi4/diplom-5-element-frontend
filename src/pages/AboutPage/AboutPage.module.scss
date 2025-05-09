@@ -4,107 +4,313 @@
   background-color: #f5f5f5;
 }
 
-/* Hero секція */
 .heroSection {
-  padding: 8rem 0;
-  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
-    url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url('https://5element.ua/upload/iblock/7c7/7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c.jpg');
   background-size: cover;
   background-position: center;
   color: white;
-  margin-bottom: 4rem;
+  padding: 6rem 0;
   text-align: center;
+  margin-bottom: 3rem;
 }
 
 .heroTitle {
-  font-size: 3.5rem;
-  font-weight: 700;
+  font-size: 3rem;
   margin-bottom: 1.5rem;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  font-weight: 700;
 }
 
 .heroSubtitle {
   font-size: 1.5rem;
-  margin-bottom: 2rem;
   opacity: 0.9;
+  margin-bottom: 2rem;
 }
 
-/* Загальні стилі для секцій */
 .section {
   padding: 4rem 0;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 2rem;
 
-  @media (max-width: 600px) {
-    padding: 40px 0;
+  &:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
   }
 }
 
 .sectionTitle {
   text-align: center;
-  margin-bottom: 1rem;
+  margin-bottom: 1rem !important;
+  color: #333;
   font-weight: 700;
 }
 
+.aboutContainer {
+  display: flex;
+  gap: 3rem;
+  align-items: center;
+  margin-top: 2rem;
+
+  @media (max-width: 960px) {
+    flex-direction: column;
+  }
+}
+
+.aboutImageContainer {
+  flex: 1;
+  min-width: 300px;
+  margin-bottom: 2rem;
+}
+
+.aboutImage {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.aboutContent {
+  flex: 1;
+}
+
+.aboutTitle {
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+.aboutDivider {
+  width: 60px;
+  height: 3px;
+  background-color: #1976d2;
+  margin: 1.5rem 0 2rem;
+}
+
+.aboutText {
+  color: #666;
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.featuresContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: space-evenly;
+  margin-top: 2rem;
+}
+
+.featureCardWrapper {
+  flex-grow: 1;
+  min-width: 250px;
+  margin-bottom: 1rem;
+  height: 100%;
+}
+
+.featureCard {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  padding: 1.5rem;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.featureIcon {
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.featureTitle {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.featureDescription {
+  text-align: center;
+  color: #666;
+  line-height: 1.6;
+}
+
+.galleryContainer {
+  margin: 3rem 0;
+}
+
+.gallerySlider {
+  padding: 1.5rem 0;
+}
+
+.galleryCard {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+}
+
+.galleryImage {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+}
+
+.galleryTitle {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1.5rem;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+  color: white;
+  font-size: 1.2rem;
+}
+
+.contactContainer {
+  display: flex;
+  gap: 2rem;
+  flex-direction: column;
+  margin-top: 2rem;
+}
+
+.contactCardWrapper,
+.mapCardWrapper {
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
+.contactCard {
+  height: 100%;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.contactTitle {
+  color: #333;
+  text-align: center;
+}
+
+.contactInfo {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.contactItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+
+.contactIcon {
+  color: #1976d2;
+  font-size: 2rem;
+}
+
+.mapCard {
+  height: 100%;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.testimonialsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.testimonialCardWrapper {
+  flex: 1;
+  min-width: 300px;
+  max-width: 400px;
+  margin-bottom: 2rem;
+}
+
+.testimonialCard {
+  height: 100%;
+  padding: 2rem;
+  background-color: white;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+  }
+}
+
+.testimonialText {
+  font-style: italic;
+  color: #666;
+  line-height: 1.8;
+  margin-bottom: 2rem;
+}
+
+.testimonialAuthor {
+  border-top: 1px solid #e0e0e0;
+  padding-top: 1.5rem;
+}
+
+.authorName {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.authorInfo {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.joinSection {
+  text-align: center;
+  padding: 4rem 0;
+  background-color: #f8f9fa;
+  margin-top: 3rem;
+}
+
+.sectionSubtitle {
+  color: #666;
+  margin-bottom: 3rem;
+}
+
+.joinButtons {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+
+/* Загальні стилі для секцій */
 .sectionSubtitle {
   text-align: center;
   margin-bottom: 3rem;
   color: #666;
 }
 
-/* Історія клубу */
-.aboutImageContainer {
-  position: relative;
-  height: 400px;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-
-  @media (max-width: 600px) {
-    height: 300px;
-    margin-bottom: 2rem;
-  }
-}
-
-.aboutImage {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.aboutContent {
-  padding: 2rem;
-}
-
-.aboutTitle {
-  margin-bottom: 1.5rem;
-  font-weight: 700;
-}
-
-.aboutDivider {
-  margin: 1.5rem 0;
-}
-
-.aboutText {
-  margin-bottom: 1rem;
-  color: #666;
-  line-height: 1.6;
-}
-
-.aboutButtons {
-  margin-top: 2rem;
-}
-
 /* Наші можливості */
-.featuresSection {
-  padding: 4rem 0;
-  background-color: #f9f9f9;
-}
-
-.featuresGrid {
+.featuresContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
   margin-top: 2rem;
 }
 
 .featureCard {
-  height: 100%;
+  flex: 1 1 calc(33.333% - 2rem);
+  min-width: 300px;
+  height: 230px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -186,6 +392,43 @@
   line-height: 1.6;
 }
 
+/* Відгуки клієнтів */
+.testimonialCard {
+  flex: 1 1 calc(33.333% - 2rem);
+  min-width: 300px;
+  height: 100%;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+  }
+}
+
+.testimonialText {
+  font-style: italic;
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.testimonialAuthor {
+  border-top: 1px solid #eee;
+  padding-top: 1rem;
+}
+
+.authorName {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.authorInfo {
+  color: #888;
+}
+
 /* Приєднуйтесь до нас */
 .joinSection {
   padding: 4rem 0;
@@ -195,6 +438,10 @@
   background-position: center;
   color: white;
   text-align: center;
+  & .sectionTitle,
+  & .sectionSubtitle {
+    color: #fff !important;
+  }
 }
 
 .joinButtons {

@@ -1,10 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from '../../axios';
 
-// Базовий URL для API
-// const API_URL = 'http://localhost:5000/api/training';
-
-// Асинхронні thunks для взаємодії з API
 export const fetchAllTrainings = createAsyncThunk(
   'trainings/fetchAllTrainings',
   async ({ category, coach } = {}, { rejectWithValue }) => {
@@ -31,7 +27,6 @@ export const fetchTrainingById = createAsyncThunk(
           Authorization: `Bearer ${auth.token}`,
         },
       });
-      console.log('Training response:', response.data);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -49,7 +44,6 @@ export const fetchTrainings = createAsyncThunk(
           Authorization: `Bearer ${auth.token}`,
         },
       });
-      console.log('Trainings response:', response.data);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -241,14 +235,12 @@ export const deleteTrainingReview = createAsyncThunk(
   },
 );
 
-// Початковий стан
 const initialState = {
   trainings: [],
   currentTraining: null,
   status: 'loading',
 };
 
-// Створення slice
 const trainingsSlice = createSlice({
   name: 'trainings',
   initialState,
@@ -265,7 +257,6 @@ const trainingsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Отримання всіх тренувань
       .addCase(fetchAllTrainings.pending, (state) => {
         state.status = 'loading';
       })
@@ -278,7 +269,6 @@ const trainingsSlice = createSlice({
         state.error = action.payload?.message || 'Помилка при отриманні тренувань';
       })
 
-      // Отримання тренування за ID
       .addCase(fetchTrainingById.pending, (state) => {
         state.status = 'loading';
       })
@@ -291,7 +281,6 @@ const trainingsSlice = createSlice({
         state.error = action.payload?.message || 'Помилка при отриманні тренування';
       })
 
-      // Створення тренування
       .addCase(createTraining.pending, (state) => {
         state.status = 'loading';
       })
@@ -304,7 +293,6 @@ const trainingsSlice = createSlice({
         state.error = action.payload?.message || 'Помилка при створенні тренування';
       })
 
-      // Оновлення тренування
       .addCase(updateTraining.pending, (state) => {
         state.status = 'loading';
       })
@@ -323,7 +311,6 @@ const trainingsSlice = createSlice({
         state.error = action.payload?.message || 'Помилка при оновленні тренування';
       })
 
-      // Видалення тренування
       .addCase(deleteTraining.pending, (state) => {
         state.status = 'loading';
       })
@@ -339,7 +326,6 @@ const trainingsSlice = createSlice({
         state.error = action.payload?.message || 'Помилка при видаленні тренування';
       })
 
-      // Запис на тренування
       .addCase(enrollTraining.pending, (state) => {
         state.status = 'loading';
       })
@@ -354,7 +340,6 @@ const trainingsSlice = createSlice({
         state.error = action.payload?.message || 'Помилка при записі на тренування';
       })
 
-      // Скасування запису на тренування
       .addCase(cancelEnrollment.pending, (state) => {
         state.status = 'loading';
       })
@@ -369,7 +354,6 @@ const trainingsSlice = createSlice({
         state.error = action.payload?.message || 'Помилка при скасуванні запису на тренування';
       })
 
-      // Завантаження фото
       .addCase(uploadTrainingPhotos.pending, (state) => {
         state.status = 'loading';
       })
@@ -384,7 +368,6 @@ const trainingsSlice = createSlice({
         state.error = action.payload?.message || 'Помилка при завантаженні фото';
       })
 
-      // Видалення фото
       .addCase(deleteTrainingPhoto.pending, (state) => {
         state.status = 'loading';
       })
@@ -401,7 +384,6 @@ const trainingsSlice = createSlice({
         state.error = action.payload?.message || 'Помилка при видаленні фото';
       })
 
-      // Додавання відгуку
       .addCase(addTrainingReview.pending, (state) => {
         state.status = 'loading';
       })
@@ -415,7 +397,6 @@ const trainingsSlice = createSlice({
         state.status = 'error';
       })
 
-      // Оновлення відгуку
       .addCase(updateTrainingReview.pending, (state) => {
         state.status = 'loading';
       })
@@ -429,7 +410,6 @@ const trainingsSlice = createSlice({
         state.status = 'error';
       })
 
-      // Видалення відгуку
       .addCase(deleteTrainingReview.pending, (state) => {
         state.status = 'loading';
       })

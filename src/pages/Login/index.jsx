@@ -35,7 +35,7 @@ const Login = () => {
         window.localStorage.setItem('token', data.payload.token);
       }
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   };
 

@@ -1,16 +1,31 @@
 .trainingPage {
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
+  padding: 3rem 2rem;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 .backButton {
-  margin-bottom: 20px;
+  align-self: flex-start;
+  margin-bottom: 1rem;
 }
 
 .trainingHeader {
-  margin-bottom: 24px;
-  padding: 24px;
+  padding: 2rem;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.headerContent {
+  display: flex;
+  gap: 2rem;
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+  }
 }
 
 .imageContainer {
@@ -28,50 +43,55 @@
 }
 
 .editButton {
-  position: absolute;
-  bottom: 16px;
-  right: 16px;
+  margin-bottom: 1rem;
 }
 
 .infoContainer {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 1.5rem;
 }
 
 .title {
-  margin-bottom: 16px;
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: #1976d2;
+  margin-bottom: 1rem;
 }
 
 .description {
-  margin-bottom: 16px;
-  white-space: pre-line;
+  color: #666;
+  line-height: 1.6;
+  font-size: 1.1rem;
 }
 
 .details {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 16px;
+  gap: 1rem;
+  margin: 1.5rem 0;
 }
 
 .chip {
-  margin-right: 8px;
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
 }
 
 .coachInfo {
-  margin-top: 16px;
-  padding: 16px;
-  background-color: #f5f5f5;
-  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.5rem;
 }
 
 .coachTitle {
-  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
 }
 
 .coachButton {
-  text-transform: none;
+  align-self: flex-start;
 }
 
 .editActions {
@@ -87,11 +107,12 @@
   align-items: center;
   justify-content: center;
   min-height: 50vh;
-  gap: 16px;
+  gap: 1.5rem;
 }
 
 .loadingText {
-  margin-top: 16px;
+  color: #666;
+  font-size: 1.25rem;
 }
 
 .errorContainer {
@@ -100,11 +121,15 @@
   align-items: center;
   justify-content: center;
   min-height: 50vh;
-  gap: 16px;
+  gap: 1.5rem;
+  text-align: center;
+  padding: 2rem;
 }
 
 .retryButton {
-  margin-top: 16px;
+  margin-top: 2rem !important;
+  padding: 0.75rem 2rem !important;
+  font-size: 1.1rem !important;
 }
 
 .notFoundContainer {
@@ -113,56 +138,69 @@
   align-items: center;
   justify-content: center;
   min-height: 50vh;
-  gap: 16px;
+  gap: 1.5rem;
+  text-align: center;
 }
 
 .photosSection {
-  margin-top: 24px;
-  padding: 24px;
+  padding: 2rem;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .sectionHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 2rem;
 }
 
 .sectionTitle {
-  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #1976d2;
 }
 
 .uploadButton {
-  margin-left: 16px;
+  padding: 0.75rem 1.5rem;
 }
 
 .photosGrid {
-  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
 }
 
 .photoCard {
+  flex: 1 1 calc(33.333% - 1.5rem);
+  min-width: 300px;
   position: relative;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: transform 0.3s ease;
+  border-radius: 8px;
+  overflow: hidden;
 
   &:hover {
-    transform: scale(1.02);
+    transform: translateY(-5px);
   }
 }
 
 .photoImage {
+  width: 100%;
+  height: 250px;
   object-fit: cover;
 }
 
 .deletePhotoButton {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  background-color: rgba(255, 255, 255, 0.8);
-  color: #f44336;
+  top: 0.5rem;
+  right: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 0.5rem;
 
   &:hover {
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: rgba(255, 255, 255, 1);
   }
 }
 
@@ -171,28 +209,22 @@
 }
 
 .reviewsSection {
-  margin-top: 24px;
-  padding: 24px;
+  padding: 2rem;
   background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.sectionTitle {
-  margin-bottom: 24px;
-  color: #1976d2;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .reviewForm {
-  margin-bottom: 24px;
-  padding: 16px;
-  background-color: #f8f9fa;
-  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .reviewFormTitle {
-  margin-bottom: 16px;
-  color: #1976d2;
+  font-weight: 600;
+  color: #333;
 }
 
 .reviewAlert {
@@ -200,19 +232,22 @@
 }
 
 .ratingInput {
-  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .ratingStars {
-  color: #ffc107;
+  color: #f50057;
 }
 
 .reviewTextField {
-  margin-bottom: 16px;
+  margin: 1rem 0;
 }
 
 .submitButton {
-  margin-top: 16px;
+  align-self: flex-end;
+  padding: 0.75rem 2rem;
 }
 
 .loginAlert {
@@ -226,31 +261,31 @@
 .reviewsList {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 1.5rem;
 }
 
 .reviewItem {
-  padding: 16px;
-  background-color: #f8f9fa;
+  padding: 1.5rem;
   border-radius: 8px;
+  background-color: #f8f9fa;
 }
 
 .reviewHeader {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 8px;
+  margin-bottom: 1rem;
 }
 
 .reviewUser {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 0.5rem;
 }
 
 .reviewerName {
   font-weight: 600;
-  color: #1976d2;
+  color: #333;
 }
 
 .reviewDate {
@@ -260,12 +295,12 @@
 .reviewActions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 1rem;
 }
 
 .reviewButtons {
   display: flex;
-  gap: 4px;
+  gap: 0.5rem;
 }
 
 .editButton {
@@ -277,8 +312,8 @@
 }
 
 .reviewText {
+  color: #666;
   line-height: 1.6;
-  color: #333;
 }
 
 .noReviewsText {
@@ -289,24 +324,53 @@
 
 @media (max-width: 600px) {
   .trainingPage {
-    padding: 16px;
+    padding: 2rem 1rem;
   }
 
   .trainingHeader {
-    padding: 16px;
+    padding: 1.5rem;
   }
 
-  .imageContainer {
+  .title {
+    font-size: 2rem;
+  }
+
+  .description {
+    font-size: 1rem;
+  }
+
+  .photosGrid {
+    gap: 1rem;
+  }
+
+  .photoCard {
+    flex: 1 1 100%;
+  }
+
+  .photoImage {
     height: 200px;
   }
 
-  .details {
-    flex-direction: column;
-    align-items: flex-start;
+  .reviewsSection {
+    padding: 1.5rem;
   }
 
-  .chip {
-    margin-bottom: 8px;
+  .sectionTitle {
+    font-size: 1.5rem;
+  }
+
+  .reviewItem {
+    padding: 1rem;
+  }
+
+  .reviewHeader {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .reviewActions {
+    width: 100%;
+    justify-content: space-between;
   }
 }
 
@@ -314,5 +378,71 @@
   .MuiDialog-paper {
     max-width: 400px;
     width: 100%;
+  }
+}
+
+.photoDialog {
+  .MuiDialog-paper {
+    max-width: 800px;
+    width: 90%;
+  }
+}
+
+.photoDialogTitle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+}
+
+.photoDialogContent {
+  padding: 1.5rem;
+}
+
+.photoPreview {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.photoDialogActions {
+  padding: 1rem 1.5rem;
+}
+
+.headerActions {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.editButton {
+  background-color: #1976d2;
+  color: white;
+
+  &:hover {
+    background-color: #1565c0;
+  }
+}
+
+.deleteButton {
+  background-color: #d32f2f;
+  color: white;
+
+  &:hover {
+    background-color: #c62828;
+  }
+}
+
+.deleteDialog {
+  .MuiDialogTitle-root {
+    color: #d32f2f;
+  }
+
+  .MuiDialogContent-root {
+    padding: 1.5rem;
+  }
+
+  .MuiDialogActions-root {
+    padding: 1rem 1.5rem;
   }
 }

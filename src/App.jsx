@@ -14,7 +14,6 @@ import TrainingsPage from './pages/TrainingsPage';
 import TrainingDetails from './pages/TrainingsPage/TrainingPage';
 import Footer from './components/Footer';
 import AboutPage from './pages/AboutPage';
-import ContactPage from './pages/ContactPage';
 import ProfilePage from './pages/ProfilePage/ProfilePage';
 import AdminPage from './pages/AdminPage';
 import CoachDashboard from './pages/CoachDashboard';
@@ -39,7 +38,6 @@ function App() {
           <Route path="/trainings" element={<TrainingsPage />} />
           <Route path="/trainings/:id" element={<TrainingDetails />} />
           <Route path="/about" element={<AboutPage />} />
-          <Route path="/contacts" element={<ContactPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/coach-dashboard" element={<CoachDashboard />} />

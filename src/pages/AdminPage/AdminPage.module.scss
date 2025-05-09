@@ -12,12 +12,18 @@
 .title {
   font-size: 24px;
   font-weight: 500;
+  text-align: center;
+  margin: 20px 0 !important;
 }
 
 .content {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 20px;
+}
+
+.contentContainer {
+  padding: 30px;
 }
 
 .card {

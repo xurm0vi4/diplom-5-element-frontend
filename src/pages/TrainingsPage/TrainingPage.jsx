@@ -9,7 +9,6 @@ import {
   Button,
   CircularProgress,
   Card,
-  CardContent,
   CardMedia,
   Chip,
   TextField,
@@ -47,9 +46,10 @@ import {
   addTrainingReview,
   updateTrainingReview,
   deleteTrainingReview,
+  deleteTraining,
 } from '../../redux/slices/trainings';
 import { fetchCategories } from '../../redux/slices/category';
-import { canEditTraining } from '../../utils/roleUtils';
+import { canEditTraining, isAdmin } from '../../utils/roleUtils';
 import styles from './TrainingPage.module.scss';
 import { API_URL } from '../../constants/api';
 import { useForm } from 'react-hook-form';
@@ -84,6 +84,7 @@ const TrainingPage = () => {
   const [selectedReview, setSelectedReview] = useState(null);
   const [deletePhotoDialogOpen, setDeletePhotoDialogOpen] = useState(false);
   const [selectedPhotoId, setSelectedPhotoId] = useState(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const {
     register: registerReview,
@@ -132,8 +133,7 @@ const TrainingPage = () => {
 
     try {
       setUploadError('');
-      const result = await dispatch(uploadTrainingPhotos({ id, photos: files })).unwrap();
-      console.log('Upload result:', result);
+      await dispatch(uploadTrainingPhotos({ id, photos: files })).unwrap();
       dispatch(fetchTrainingById(id));
     } catch (error) {
       console.error('Upload error:', error);
@@ -250,6 +250,17 @@ const TrainingPage = () => {
     }
   };
 
+  const handleDelete = async () => {
+    try {
+      await dispatch(deleteTraining(id)).unwrap();
+      navigate('/trainings');
+    } catch (error) {
+      console.error('Помилка при видаленні тренування:', error);
+    }
+  };
+
+  const canDelete = isAdmin(user) || user?._id === training?.coach?.user?._id;
+
   if (status === 'loading' || categoriesStatus === 'loading') {
     return (
       <Box className={styles.loadingContainer}>
@@ -304,145 +315,150 @@ const TrainingPage = () => {
       </Button>
 
       <Paper className={styles.trainingHeader}>
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={4}>
-            {canEdit && (
-              <Button
-                variant="contained"
-                startIcon={<EditIcon />}
-                onClick={() => setIsEditing(true)}
-                className={styles.editButton}>
-                Редагувати тренування
-              </Button>
-            )}
-          </Grid>
-          <Grid item xs={12} md={8}>
-            <Box className={styles.infoContainer}>
-              {isEditing ? (
-                <Box
-                  component="form"
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    handleEditSubmit();
-                  }}>
-                  <TextField
-                    fullWidth
-                    label="Назва"
-                    value={editForm.title}
-                    onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
-                    margin="normal"
-                  />
-                  <TextField
-                    fullWidth
-                    label="Опис"
-                    value={editForm.description}
-                    onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
-                    multiline
-                    rows={4}
-                    margin="normal"
-                  />
-                  <FormControl fullWidth margin="normal">
-                    <InputLabel>Категорія</InputLabel>
-                    <Select
-                      value={editForm.category}
-                      onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
-                      label="Категорія">
-                      {categories.map((category) => (
-                        <MenuItem key={category._id} value={category._id}>
-                          {category.name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                  <TextField
-                    fullWidth
-                    label="Місце проведення"
-                    value={editForm.location}
-                    onChange={(e) => setEditForm({ ...editForm, location: e.target.value })}
-                    margin="normal"
-                  />
-                  <TextField
-                    fullWidth
-                    label="Тривалість (хв)"
-                    value={editForm.duration}
-                    onChange={(e) => setEditForm({ ...editForm, duration: e.target.value })}
-                    type="number"
-                    margin="normal"
-                  />
-                  <TextField
-                    fullWidth
-                    label="Максимальна кількість учасників"
-                    value={editForm.capacity}
-                    onChange={(e) => setEditForm({ ...editForm, capacity: e.target.value })}
-                    type="number"
-                    margin="normal"
-                  />
-                  <FormControl fullWidth margin="normal">
-                    <InputLabel>Статус</InputLabel>
-                    <Select
-                      value={editForm.isActive}
-                      onChange={(e) => setEditForm({ ...editForm, isActive: e.target.value })}
-                      label="Статус">
-                      <MenuItem value={true}>Активне</MenuItem>
-                      <MenuItem value={false}>Неактивне</MenuItem>
-                    </Select>
-                  </FormControl>
-                  <Box className={styles.editActions}>
-                    <Button
-                      variant="outlined"
-                      color="secondary"
-                      onClick={() => setIsEditing(false)}>
-                      Скасувати
-                    </Button>
-                    <Button type="submit" variant="contained" color="primary">
-                      Зберегти
-                    </Button>
-                  </Box>
-                </Box>
-              ) : (
-                <>
-                  <Typography variant="h4" className={styles.title}>
-                    {training.title}
-                  </Typography>
-                  <Typography variant="body1" className={styles.description}>
-                    {training.description}
-                  </Typography>
-                  <Box className={styles.details}>
-                    <Chip icon={<LocationOn />} label={training.location} className={styles.chip} />
-                    <Chip
-                      icon={<AccessTime />}
-                      label={`${training.duration} хв`}
-                      className={styles.chip}
-                    />
-                    <Chip
-                      icon={<Group />}
-                      label={`${training.capacity} учасників`}
-                      className={styles.chip}
-                    />
-                    <Chip
-                      label={training.isActive ? 'Активне' : 'Неактивне'}
-                      color={training.isActive ? 'success' : 'error'}
-                      className={styles.chip}
-                    />
-                  </Box>
-                  <Box className={styles.coachInfo}>
-                    <Typography variant="h6" className={styles.coachTitle}>
-                      Тренер
-                    </Typography>
-                    <Button
-                      startIcon={<Person />}
-                      onClick={() => navigate(`/coaches/${training.coach._id}`)}
-                      className={styles.coachButton}>
-                      {training.coach.user.firstName} {training.coach.user.lastName}
-                    </Button>
-                  </Box>
-                </>
+        <div className={styles.headerContent}>
+          <div className={styles.infoContainer}>
+            <div className={styles.headerActions}>
+              {canEdit && (
+                <Button
+                  variant="contained"
+                  startIcon={<EditIcon />}
+                  onClick={() => setIsEditing(true)}
+                  className={styles.editButton}>
+                  Редагувати тренування
+                </Button>
               )}
-            </Box>
-          </Grid>
-        </Grid>
-      </Paper>
+              {canDelete && (
+                <Button
+                  variant="contained"
+                  color="error"
+                  startIcon={<DeleteIcon />}
+                  onClick={() => setIsDeleteDialogOpen(true)}
+                  className={styles.deleteButton}>
+                  Видалити тренування
+                </Button>
+              )}
+            </div>
 
+            {isEditing ? (
+              <Box
+                component="form"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleEditSubmit();
+                }}>
+                <TextField
+                  fullWidth
+                  label="Назва"
+                  value={editForm.title}
+                  onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                  margin="normal"
+                />
+                <TextField
+                  fullWidth
+                  label="Опис"
+                  value={editForm.description}
+                  onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                  multiline
+                  rows={4}
+                  margin="normal"
+                />
+                <FormControl fullWidth margin="normal">
+                  <InputLabel>Категорія</InputLabel>
+                  <Select
+                    value={editForm.category}
+                    onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
+                    label="Категорія">
+                    {categories.map((category) => (
+                      <MenuItem key={category._id} value={category._id}>
+                        {category.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <TextField
+                  fullWidth
+                  label="Місце проведення"
+                  value={editForm.location}
+                  onChange={(e) => setEditForm({ ...editForm, location: e.target.value })}
+                  margin="normal"
+                />
+                <TextField
+                  fullWidth
+                  label="Тривалість (хв)"
+                  value={editForm.duration}
+                  onChange={(e) => setEditForm({ ...editForm, duration: e.target.value })}
+                  type="number"
+                  margin="normal"
+                />
+                <TextField
+                  fullWidth
+                  label="Максимальна кількість учасників"
+                  value={editForm.capacity}
+                  onChange={(e) => setEditForm({ ...editForm, capacity: e.target.value })}
+                  type="number"
+                  margin="normal"
+                />
+                <FormControl fullWidth margin="normal">
+                  <InputLabel>Статус</InputLabel>
+                  <Select
+                    value={editForm.isActive}
+                    onChange={(e) => setEditForm({ ...editForm, isActive: e.target.value })}
+                    label="Статус">
+                    <MenuItem value={true}>Активне</MenuItem>
+                    <MenuItem value={false}>Неактивне</MenuItem>
+                  </Select>
+                </FormControl>
+                <Box className={styles.editActions}>
+                  <Button variant="outlined" color="secondary" onClick={() => setIsEditing(false)}>
+                    Скасувати
+                  </Button>
+                  <Button type="submit" variant="contained" color="primary">
+                    Зберегти
+                  </Button>
+                </Box>
+              </Box>
+            ) : (
+              <>
+                <Typography variant="h4" className={styles.title}>
+                  {training.title}
+                </Typography>
+                <Typography variant="body1" className={styles.description}>
+                  {training.description}
+                </Typography>
+                <Box className={styles.details}>
+                  <Chip icon={<LocationOn />} label={training.location} className={styles.chip} />
+                  <Chip
+                    icon={<AccessTime />}
+                    label={`${training.duration} хв`}
+                    className={styles.chip}
+                  />
+                  <Chip
+                    icon={<Group />}
+                    label={`${training.capacity} учасників`}
+                    className={styles.chip}
+                  />
+                  <Chip
+                    label={training.isActive ? 'Активне' : 'Неактивне'}
+                    color={training.isActive ? 'success' : 'error'}
+                    className={styles.chip}
+                  />
+                </Box>
+                <Box className={styles.coachInfo}>
+                  <Typography variant="h6" className={styles.coachTitle}>
+                    Тренер
+                  </Typography>
+                  <Button
+                    startIcon={<Person />}
+                    onClick={() => navigate(`/coaches/${training.coach._id}`)}
+                    className={styles.coachButton}>
+                    {training.coach.user.firstName} {training.coach.user.lastName}
+                  </Button>
+                </Box>
+              </>
+            )}
+          </div>
+        </div>
+      </Paper>
       <Paper className={styles.photosSection}>
         <Box className={styles.sectionHeader}>
           <Typography variant="h5" className={styles.sectionTitle}>
@@ -469,34 +485,33 @@ const TrainingPage = () => {
         )}
 
         {training.photos && training.photos.length > 0 ? (
-          <Grid container spacing={2} className={styles.photosGrid}>
+          <div className={styles.photosGrid}>
             {training.photos.map((photo) => (
-              <Grid item xs={12} sm={6} md={4} key={photo}>
-                <Card className={styles.photoCard} onClick={() => handlePhotoClick(photo)}>
-                  <CardMedia
-                    component="img"
-                    height="200"
-                    image={
-                      photo.startsWith('http') ? photo : `${API_URL}uploads/trainings/${photo}`
-                    }
-                    alt="Фото тренування"
-                    className={styles.photoImage}
-                  />
-                  {canEdit && (
-                    <IconButton
-                      className={styles.deletePhotoButton}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedPhotoId(photo);
-                        setDeletePhotoDialogOpen(true);
-                      }}>
-                      <DeleteIcon />
-                    </IconButton>
-                  )}
-                </Card>
-              </Grid>
+              <Card
+                key={photo}
+                className={styles.photoCard}
+                onClick={() => handlePhotoClick(photo)}>
+                <CardMedia
+                  component="img"
+                  height="200"
+                  image={photo.startsWith('http') ? photo : `${API_URL}uploads/trainings/${photo}`}
+                  alt="Фото тренування"
+                  className={styles.photoImage}
+                />
+                {canEdit && (
+                  <IconButton
+                    className={styles.deletePhotoButton}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedPhotoId(photo);
+                      setDeletePhotoDialogOpen(true);
+                    }}>
+                    <DeleteIcon />
+                  </IconButton>
+                )}
+              </Card>
             ))}
-          </Grid>
+          </div>
         ) : (
           <Typography variant="body1" className={styles.noPhotosText}>
             Фотографій поки що немає
@@ -577,7 +592,9 @@ const TrainingPage = () => {
         )}
 
         <Divider className={styles.divider} />
-
+        <Typography variant="subtitle1" className={styles.reviewFormTitle} my={2}>
+          Відгуки
+        </Typography>
         {training.reviews && training.reviews.length > 0 ? (
           <Box className={styles.reviewsList}>
             {training.reviews.map((review) => (
@@ -732,6 +749,25 @@ const TrainingPage = () => {
             onClick={() => handleDeletePhoto(selectedPhotoId)}
             variant="contained"
             color="error">
+            Видалити
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        className={styles.deleteDialog}>
+        <DialogTitle>Підтвердження видалення</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Ви впевнені, що хочете видалити тренування "{training.title}"? Цю дію неможливо
+            скасувати.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setIsDeleteDialogOpen(false)}>Скасувати</Button>
+          <Button onClick={handleDelete} color="error" variant="contained">
             Видалити
           </Button>
         </DialogActions>

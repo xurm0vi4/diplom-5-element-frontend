@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { Box, Typography, Tabs, Tab, Paper, Button, CircularProgress, Alert } from '@mui/material';
+import { useSelector } from 'react-redux';
+import { Box, Typography, Tabs, Tab, Paper, Button } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import { isAdmin } from '../../utils/roleUtils';
 import styles from './AdminPage.module.scss';
@@ -10,10 +10,8 @@ import CreateCoachForm from '../../components/CreateCoachForm/CreateCoachForm';
 
 const AdminPage = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const { data: user } = useSelector((state) => state.auth);
   const [activeTab, setActiveTab] = useState(0);
-  const [error, setError] = useState('');
 
   useEffect(() => {
     if (!user) {
@@ -57,28 +55,18 @@ const AdminPage = () => {
         {activeTab === 0 ? (
           <Box className={styles.coachesSection}>
             <Box className={styles.sectionHeader}>
-              <Typography variant="h5">Управління тренерами</Typography>
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<AddIcon />}
-                onClick={() => setActiveTab(0)}>
+              <Typography variant="h5" textAlign="center" py={2}>
                 Створити тренера
-              </Button>
+              </Typography>
             </Box>
             <CreateCoachForm />
           </Box>
         ) : (
           <Box className={styles.trainingsSection}>
             <Box className={styles.sectionHeader}>
-              <Typography variant="h5">Управління тренуваннями</Typography>
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<AddIcon />}
-                onClick={() => setActiveTab(1)}>
+              <Typography variant="h5" textAlign="center" py={2}>
                 Створити тренування
-              </Button>
+              </Typography>
             </Box>
             <CreateTrainingForm isAdmin={true} />
           </Box>

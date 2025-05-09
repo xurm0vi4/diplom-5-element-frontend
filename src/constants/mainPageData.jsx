@@ -1,57 +1,99 @@
 import {
   FitnessCenter,
-  SportsGymnastics,
   Pool,
-  SportsMartialArts,
+  Spa,
+  Restaurant,
+  LocalParking,
+  Security,
   SportsTennis,
+  ChildCare,
+  LocalLibrary,
+  LocalHospital,
+  SportsMartialArts,
+  SportsGymnastics,
 } from '@mui/icons-material';
 
-// Переваги клубу
 export const advantages = [
   {
-    title: 'Професійні тренери',
-    description: 'Наші тренери мають багаторічний досвід та сертифікати',
-    icon: <FitnessCenter />,
-  },
-  {
+    icon: <FitnessCenter fontSize="large" />,
     title: 'Сучасне обладнання',
-    description: 'Новітнє спортивне обладнання для ефективних тренувань',
-    icon: <SportsGymnastics />,
+    description:
+      'Двоповерховий тренажерний зал площею 2000 м² з найновішим обладнанням від провідних виробників',
   },
   {
-    title: 'Басейн',
-    description: 'Олімпійський басейн з професійними тренерами',
-    icon: <Pool />,
+    icon: <Pool fontSize="large" />,
+    title: 'Басейни',
+    description:
+      'Два спортивні басейни по 25 метрів, дитячий басейн, джакузі та літній басейн під відкритим небом',
   },
   {
-    title: 'Бойові мистецтва',
-    description: 'Різноманітні секції бойових мистецтв для всіх рівнів',
-    icon: <SportsMartialArts />,
+    icon: <Spa fontSize="large" />,
+    title: 'SPA-зона',
+    description: 'Сучасна SPA-зона з сауною, хамамом та зоною відпочинку для повного релаксу',
   },
   {
-    title: 'Теніс',
-    description: 'Професійні корти та тренування з досвідченими тренерами',
-    icon: <SportsTennis />,
+    icon: <Restaurant fontSize="large" />,
+    title: 'Здорове харчування',
+    description:
+      'Ресторан з меню від професійних дієтологів та смузі-бар для відновлення після тренувань',
+  },
+  {
+    icon: <LocalParking fontSize="large" />,
+    title: 'Паркування',
+    description: "Безкоштовне паркування для членів клубу та зручна транспортна розв'язка",
+  },
+  {
+    icon: <Security fontSize="large" />,
+    title: 'Безпека',
+    description: 'Цілодобова охорона та система контролю доступу для максимальної безпеки',
+  },
+  {
+    icon: <SportsTennis fontSize="large" />,
+    title: 'Теніс та сквош',
+    description: 'Професійні тенісні корти та сквош-корт з сучасним покриттям',
+  },
+  {
+    icon: <ChildCare fontSize="large" />,
+    title: 'Дитяча зона',
+    description: 'Окрема дитяча зона з кваліфікованими вихователями та розвиваючими заняттями',
+  },
+  {
+    icon: <LocalLibrary fontSize="large" />,
+    title: 'Бібліотека',
+    description: 'Бібліотека з літературою про здорове харчування та фітнес',
+  },
+  {
+    icon: <LocalHospital fontSize="large" />,
+    title: 'Медичний центр',
+    description: 'Медичний центр з досвідченими лікарями та сучасним обладнанням',
   },
 ];
 
-// Фотографії клубу
 export const clubPhotos = [
-  { url: 'src/assets/test.jpg', title: 'Тренажерний зал' },
-  { url: 'src/assets/test.jpg', title: 'Басейн' },
-  { url: 'src/assets/test.jpg', title: 'Тенісний корт' },
-  { url: 'src/assets/test.jpg', title: 'Зал бойових мистецтв' },
-  { url: 'src/assets/test.jpg', title: 'Групові заняття' },
-];
-
-// Категорії тренувань
-export const categories = [
-  { id: 'fitness', name: 'Фітнес', icon: <FitnessCenter /> },
-  { id: 'yoga', name: 'Йога', icon: <SportsGymnastics /> },
-  { id: 'dance', name: 'Танці', icon: <SportsTennis /> },
-  { id: 'martial_arts', name: 'Бойові мистецтва', icon: <SportsMartialArts /> },
-  { id: 'swimming', name: 'Плавання', icon: <Pool /> },
-  { id: 'team_sports', name: 'Командні види спорту', icon: <SportsTennis /> },
+  {
+    url: 'https://5element.ua/upload/iblock/7c7/7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c.jpg',
+    title: 'Тренажерний зал',
+  },
+  {
+    url: 'https://5element.ua/upload/iblock/8d8/8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d.jpg',
+    title: 'Басейн',
+  },
+  {
+    url: 'https://5element.ua/upload/iblock/9e9/9e9e9e9e9e9e9e9e9e9e9e9e9e9e9e9e.jpg',
+    title: 'SPA-зона',
+  },
+  {
+    url: 'https://5element.ua/upload/iblock/0f0/0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f.jpg',
+    title: 'Тенісний корт',
+  },
+  {
+    url: 'https://5element.ua/upload/iblock/1g1/1g1g1g1g1g1g1g1g1g1g1g1g1g1g1g1g.jpg',
+    title: 'Дитяча зона',
+  },
+  {
+    url: 'https://5element.ua/upload/iblock/2h2/2h2h2h2h2h2h2h2h2h2h2h2h2h2h2h2h.jpg',
+    title: 'Ресторан',
+  },
 ];
 
 export const iconMap = {
