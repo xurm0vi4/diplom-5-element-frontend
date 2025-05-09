@@ -6,14 +6,10 @@ import {
   Typography,
   Button,
   Card,
-  CardContent,
-  CardMedia,
-  CardActions,
   Container,
   Paper,
   Divider,
   CircularProgress,
-  Chip,
   IconButton,
   Dialog,
   DialogTitle,
@@ -22,15 +18,7 @@ import {
   useTheme,
   useMediaQuery,
 } from '@mui/material';
-import {
-  ArrowForward,
-  LocationOn,
-  AccessTime,
-  Group,
-  Close,
-  ArrowBackIos,
-  ArrowForwardIos,
-} from '@mui/icons-material';
+import { ArrowForward, Close, ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
 import { fetchAllTrainings } from '../../redux/slices/trainings';
 import { advantages, clubPhotos } from '../../constants/mainPageData';
 import styles from './MainPage.module.scss';
@@ -132,11 +120,7 @@ const MainPage = () => {
               </Box>
             </Box>
             <Box className={styles.heroImageContainer}>
-              <img
-                src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
-                alt="Спортивний клуб"
-                className={styles.heroImage}
-              />
+              <img src="src/assets/gym.jpg" alt="Спортивний клуб" className={styles.heroImage} />
             </Box>
           </Box>
         </Container>
@@ -210,7 +194,7 @@ const MainPage = () => {
         </Box>
       </Container>
 
-      <Box className={styles.gallerySection}>
+      <Box className={styles.section}>
         <Container maxWidth="lg">
           <Typography variant="h3" component="h2" className={styles.sectionTitle}>
             Фотогалерея
@@ -219,37 +203,30 @@ const MainPage = () => {
             Ознайомтеся з нашими залами та обладнанням
           </Typography>
 
-          <Box className={styles.gallerySliderContainer}>
+          <Box className={styles.galleryContainer}>
             <Swiper
-              modules={[Navigation, Pagination, Autoplay]}
+              modules={[Pagination]}
               spaceBetween={20}
-              slidesPerView={isMobile ? 1 : 3}
-              navigation={{
-                prevEl: `.${styles.gallerySliderArrowLeft}`,
-                nextEl: `.${styles.gallerySliderArrowRight}`,
-              }}
+              slidesPerView={1}
               pagination={{ clickable: true }}
-              autoplay={{ delay: 4000 }}
-              className={styles.photoGallery}>
+              breakpoints={{
+                640: {
+                  slidesPerView: 2,
+                },
+                960: {
+                  slidesPerView: 3,
+                },
+              }}
+              className={styles.gallerySlider}>
               {clubPhotos.map((photo, index) => (
                 <SwiperSlide key={index}>
-                  <Card className={styles.photoCard} onClick={() => handlePhotoClick(photo)}>
-                    <img src={photo.url} alt={photo.title} className={styles.photoImage} />
-                    <Typography variant="h6" className={styles.photoTitle}>
-                      {photo.title}
-                    </Typography>
-                  </Card>
+                  <Box className={styles.galleryCard}>
+                    <img src={photo.url} alt={photo.title} className={styles.galleryImage} />
+                    <Typography className={styles.galleryTitle}>{photo.title}</Typography>
+                  </Box>
                 </SwiperSlide>
               ))}
             </Swiper>
-            <Box className={styles.gallerySliderArrows}>
-              <IconButton className={styles.gallerySliderArrowLeft}>
-                <ArrowBackIos />
-              </IconButton>
-              <IconButton className={styles.gallerySliderArrowRight}>
-                <ArrowForwardIos />
-              </IconButton>
-            </Box>
           </Box>
         </Container>
       </Box>
@@ -264,11 +241,7 @@ const MainPage = () => {
 
         <Box className={styles.aboutContainer}>
           <Box className={styles.aboutImageContainer}>
-            <img
-              src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
-              alt="Про наш клуб"
-              className={styles.aboutImage}
-            />
+            <img src="src/assets/gym2.jpg" alt="Про наш клуб" className={styles.aboutImage} />
           </Box>
           <Box className={styles.aboutContent}>
             <Typography variant="h4" component="h3" className={styles.aboutTitle}>

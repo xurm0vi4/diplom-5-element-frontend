@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Typography, Container, Card, CardContent, Button } from '@mui/material';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation } from 'swiper/modules';
+import { Navigation, Pagination } from 'swiper/modules';
 import { LocationOn, Phone, Email, AccessTime } from '@mui/icons-material';
 import { features, clubPhotos } from '../../constants/aboutPageData';
 import styles from './AboutPage.module.scss';
@@ -32,7 +32,7 @@ const AboutPage = () => {
           <Box className={styles.aboutContainer}>
             <Box className={styles.aboutImageContainer}>
               <img
-                src="https://5element.ua/upload/iblock/7c7/7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c.jpg"
+                src="src/assets/gym4.jpg"
                 alt="Фітнес-клуб 5 елемент"
                 className={styles.aboutImage}
               />
@@ -98,10 +98,10 @@ const AboutPage = () => {
           </Typography>
           <Box className={styles.galleryContainer}>
             <Swiper
-              modules={[Navigation]}
+              modules={[Pagination]}
               spaceBetween={20}
               slidesPerView={1}
-              navigation
+              pagination={{ clickable: true }}
               breakpoints={{
                 640: {
                   slidesPerView: 2,

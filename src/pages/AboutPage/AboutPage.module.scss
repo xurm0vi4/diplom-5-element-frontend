@@ -5,8 +5,7 @@
 }
 
 .heroSection {
-  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-    url('https://5element.ua/upload/iblock/7c7/7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c.jpg');
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('src/assets/gym3.jpg');
   background-size: cover;
   background-position: center;
   color: white;
@@ -292,14 +291,12 @@
   margin-top: 2rem;
 }
 
-/* Загальні стилі для секцій */
 .sectionSubtitle {
   text-align: center;
   margin-bottom: 3rem;
   color: #666;
 }
 
-/* Наші можливості */
 .featuresContainer {
   display: flex;
   flex-wrap: wrap;
@@ -340,7 +337,6 @@
   color: #666;
 }
 
-/* Наша команда */
 .teamGrid {
   margin-top: 2rem;
 }
@@ -392,7 +388,6 @@
   line-height: 1.6;
 }
 
-/* Відгуки клієнтів */
 .testimonialCard {
   flex: 1 1 calc(33.333% - 2rem);
   min-width: 300px;
@@ -429,11 +424,9 @@
   color: #888;
 }
 
-/* Приєднуйтесь до нас */
 .joinSection {
   padding: 4rem 0;
-  background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
-    url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+  background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('src/assets/gym.jpg');
   background-size: cover;
   background-position: center;
   color: white;
@@ -455,7 +448,6 @@
   }
 }
 
-/* Адаптивний дизайн */
 @media (max-width: 600px) {
   .heroSection {
     padding: 4rem 0;

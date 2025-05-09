@@ -26,27 +26,27 @@ export const features = [
 
 export const clubPhotos = [
   {
-    url: 'https://5element.ua/upload/iblock/7c7/7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c.jpg',
+    url: 'src/assets/gym4.jpg',
     title: 'Тренажерний зал',
   },
   {
-    url: 'https://5element.ua/upload/iblock/8d8/8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d.jpg',
+    url: 'src/assets/swimming-pool.jpg',
     title: 'Басейн',
   },
   {
-    url: 'https://5element.ua/upload/iblock/9e9/9e9e9e9e9e9e9e9e9e9e9e9e9e9e9e9e.jpg',
+    url: 'src/assets/spa-zone.jpg',
     title: 'SPA-зона',
   },
   {
-    url: 'https://5element.ua/upload/iblock/0f0/0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f.jpg',
+    url: 'src/assets/tennis-court.jpg',
     title: 'Тенісний корт',
   },
   {
-    url: 'https://5element.ua/upload/iblock/1g1/1g1g1g1g1g1g1g1g1g1g1g1g1g1g1g1g.jpg',
+    url: 'src/assets/childzone.JPG',
     title: 'Дитяча зона',
   },
   {
-    url: 'https://5element.ua/upload/iblock/2h2/2h2h2h2h2h2h2h2h2h2h2h2h2h2h2h2h.jpg',
+    url: 'src/assets/restaurant.jpg',
     title: 'Ресторан',
   },
 ];

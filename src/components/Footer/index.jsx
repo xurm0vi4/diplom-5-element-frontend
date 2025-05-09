@@ -22,16 +22,15 @@ const Footer = () => {
               Email: info@5element.ua
             </Typography>
             <Box className={styles.socialLinks}>
-              <IconButton className={styles.iconButton}>
+              <IconButton className={styles.iconButton} href="https://www.facebook.com/5elementua">
                 <Facebook />
               </IconButton>
-              <IconButton className={styles.iconButton}>
+              <IconButton
+                className={styles.iconButton}
+                href="https://www.instagram.com/5element.ua">
                 <Instagram />
               </IconButton>
-              <IconButton className={styles.iconButton}>
-                <Twitter />
-              </IconButton>
-              <IconButton className={styles.iconButton}>
+              <IconButton className={styles.iconButton} href="https://www.youtube.com/5elementua">
                 <YouTube />
               </IconButton>
             </Box>
