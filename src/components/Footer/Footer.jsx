@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Grid, Typography, IconButton, Box } from '@mui/material';
+import { Container, Typography, IconButton, Box } from '@mui/material';
 import { Facebook, Instagram, Twitter, YouTube } from '@mui/icons-material';
 import styles from './Footer.module.scss';
 
@@ -9,8 +9,20 @@ const Footer = () => {
   return (
     <footer className={styles.footer}>
       <Container>
-        <Grid container spacing={4}>
-          <Grid item xs={12} md={4}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '2rem',
+            '@media (max-width: 600px)': {
+              flexDirection: 'column',
+            },
+          }}>
+          <Box
+            sx={{
+              flex: '1 1 300px',
+              minWidth: '300px',
+            }}>
             <Typography variant="h6" className={styles.footerTitle}>
               Контакти
             </Typography>
@@ -34,9 +46,13 @@ const Footer = () => {
                 <YouTube />
               </IconButton>
             </Box>
-          </Grid>
+          </Box>
 
-          <Grid item xs={12} md={4}>
+          <Box
+            sx={{
+              flex: '1 1 300px',
+              minWidth: '300px',
+            }}>
             <Typography variant="h6" className={styles.footerTitle}>
               Слідкуйте за нами
             </Typography>
@@ -44,8 +60,8 @@ const Footer = () => {
               Підпишіться на наші соціальні мережі, щоб бути в курсі останніх новин, акцій та подій
               у нашому клубі.
             </Typography>
-          </Grid>
-        </Grid>
+          </Box>
+        </Box>
 
         <Box className={styles.footerBottom}>
           <Typography className={styles.copyright}>
