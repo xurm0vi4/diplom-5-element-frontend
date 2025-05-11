@@ -28,7 +28,7 @@ function App() {
   return (
     <div className="wrapper">
       <Header />
-      <Container maxWidth="lg">
+      <Container maxWidth="lg" className="main">
         <Routes>
           <Route path="/" element={<MainPage />} />
           <Route path="/login" element={<Login />} />
