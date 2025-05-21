@@ -13,6 +13,13 @@ import {
   SportsGymnastics,
 } from '@mui/icons-material';
 
+import gym1 from '../assets/gym4.jpg';
+import swimmingPool from '../assets/swimming-pool.jpg';
+import spaZone from '../assets/spa-zone.jpg';
+import tennisCourt from '../assets/tennis-court.jpg';
+import childzone from '../assets/childzone.JPG';
+import restaurant from '../assets/restaurant.jpg';
+
 export const advantages = [
   {
     icon: <FitnessCenter fontSize="large" />,
@@ -71,27 +78,27 @@ export const advantages = [
 
 export const clubPhotos = [
   {
-    url: 'src/assets/gym1.jpg',
+    url: gym1,
     title: 'Тренажерний зал',
   },
   {
-    url: 'src/assets/swimming-pool.jpg',
+    url: swimmingPool,
     title: 'Басейн',
   },
   {
-    url: 'src/assets/spa-zone.jpg',
+    url: spaZone,
     title: 'SPA-зона',
   },
   {
-    url: 'src/assets/tennis-court.jpg',
+    url: tennisCourt,
     title: 'Тенісний корт',
   },
   {
-    url: 'src/assets/childzone.JPG',
+    url: childzone,
     title: 'Дитяча зона',
   },
   {
-    url: 'src/assets/restaurant.jpg',
+    url: restaurant,
     title: 'Ресторан',
   },
 ];

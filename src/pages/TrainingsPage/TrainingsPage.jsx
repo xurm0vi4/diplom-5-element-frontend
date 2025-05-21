@@ -38,6 +38,7 @@ import styles from './TrainingsPage.module.scss';
 import { isAdmin, isCoach } from '../../utils/roleUtils';
 import { API_URL } from '../../constants/api';
 import emptyAvatar from '../../assets/empty-avatar.png';
+import placeholderImage from '../../assets/placeholder-image.jpg';
 
 const TrainingsPage = () => {
   const navigate = useNavigate();
@@ -263,7 +264,7 @@ const TrainingsPage = () => {
                     image={
                       training.photos?.[0]
                         ? `${API_URL}uploads/trainings/${training.photos[0]}`
-                        : ''
+                        : placeholderImage
                     }
                     alt={training.title}
                     className={styles.trainingImage}

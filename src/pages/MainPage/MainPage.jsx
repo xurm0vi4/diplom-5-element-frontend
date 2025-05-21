@@ -30,6 +30,9 @@ import 'swiper/css/pagination';
 import { fetchCategories } from '../../redux/slices/category';
 import { CategoryCard } from '../../components/CategoryCard/CategoryCard';
 
+import gym from '../../assets/gym.jpg';
+import gym2 from '../../assets/gym2.jpg';
+
 const MainPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -120,7 +123,7 @@ const MainPage = () => {
               </Box>
             </Box>
             <Box className={styles.heroImageContainer}>
-              <img src="src/assets/gym.jpg" alt="Спортивний клуб" className={styles.heroImage} />
+              <img src={gym} alt="Спортивний клуб" className={styles.heroImage} />
             </Box>
           </Box>
         </Container>
@@ -241,7 +244,7 @@ const MainPage = () => {
 
         <Box className={styles.aboutContainer}>
           <Box className={styles.aboutImageContainer}>
-            <img src="src/assets/gym2.jpg" alt="Про наш клуб" className={styles.aboutImage} />
+            <img src={gym2} alt="Про наш клуб" className={styles.aboutImage} />
           </Box>
           <Box className={styles.aboutContent}>
             <Typography variant="h4" component="h3" className={styles.aboutTitle}>

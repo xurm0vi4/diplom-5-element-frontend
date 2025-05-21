@@ -9,11 +9,14 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import { useNavigate } from 'react-router-dom';
 
+import gym3 from '../../assets/gym3.jpg';
+import gym4 from '../../assets/gym4.jpg';
+
 const AboutPage = () => {
   const navigate = useNavigate();
   return (
     <div className={styles.aboutPage}>
-      <Box className={styles.heroSection}>
+      <Box className={styles.heroSection} style={{ '--hero-bg': `url(${gym3})` }}>
         <Container>
           <Typography variant="h2" className={styles.heroTitle}>
             Про клуб "5 елемент"
@@ -31,11 +34,7 @@ const AboutPage = () => {
           </Typography>
           <Box className={styles.aboutContainer}>
             <Box className={styles.aboutImageContainer}>
-              <img
-                src="src/assets/gym4.jpg"
-                alt="Фітнес-клуб 5 елемент"
-                className={styles.aboutImage}
-              />
+              <img src={gym4} alt="Фітнес-клуб 5 елемент" className={styles.aboutImage} />
             </Box>
             <Box className={styles.aboutContent}>
               <Typography variant="h4" className={styles.aboutTitle}>
