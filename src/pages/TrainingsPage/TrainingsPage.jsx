@@ -263,7 +263,7 @@ const TrainingsPage = () => {
                     image={
                       training.photos?.[0]
                         ? `${API_URL}uploads/trainings/${training.photos[0]}`
-                        : 'https://via.placeholder.com/400x300?text=Тренування'
+                        : ''
                     }
                     alt={training.title}
                     className={styles.trainingImage}

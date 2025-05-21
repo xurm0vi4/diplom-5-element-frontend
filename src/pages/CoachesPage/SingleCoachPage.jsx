@@ -412,7 +412,7 @@ const CoachPage = () => {
                   className={styles.textarea}
                 />
 
-                <Box className={styles.formActions}>
+                <Box className={styles.formActions} sx={{ display: 'flex', gap: 1 }}>
                   <Button variant="contained" color="primary" type="submit">
                     Зберегти
                   </Button>
