@@ -84,7 +84,7 @@ const MainPage = () => {
 
   return (
     <div className={styles.mainPage}>
-      <Box className={styles.heroSection}>
+      <Box className={styles.heroSection} style={{ '--hero-bg': `url(${gym})` }}>
         <Container maxWidth="lg">
           <Box className={styles.heroContainer}>
             <Box className={styles.heroContent}>
