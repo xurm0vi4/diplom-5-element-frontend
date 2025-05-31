@@ -95,7 +95,7 @@ const Registration = () => {
           fullWidth
         />
         <Button disabled={!isValid} size="large" variant="contained" type="submit" fullWidth>
-          Sign up
+          Зареєструватися
         </Button>
       </form>
     </Paper>
